@@ -71,11 +71,11 @@ return (
 <img src={logo} alt="" />
 </div>
   <div className="gradient-divider"></div>
-   <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+   <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
 <div className="signup-right-column">
 <div className="signup-container">
 <div className="signup-card">
