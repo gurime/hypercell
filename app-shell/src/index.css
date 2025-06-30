@@ -12,11 +12,12 @@ letter-spacing: 1px;
 display: flex;
 justify-content: space-between;
 align-items: center;
-background: linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 100%);
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .logo{
-    margin: auto;
+margin: auto;
+padding: 1rem;
 }
 
 .logo a{
@@ -26,8 +27,9 @@ text-decoration: none;
 }
             
 .logo img{
-height: 30px;
+height: 50px;
 border: none;
+outline: none;
 }
 
 
@@ -40,6 +42,7 @@ border-radius: 0.25rem;
 color: #333;
 transition: all 0.3s ease;
 place-items: center;
+margin: auto;
 }
   
 
@@ -62,12 +65,88 @@ color: white;
 .sm-navlink a{
 padding: 1rem;}
 
+.icon-nav{
+display: flex;
+align-items: center;
+gap: 1rem;
+}
+
+
+
 
 @media(max-width:968px){
 #top-navbar{flex-wrap: wrap;flex-direction: column;}
 .logo{margin: auto;padding: 1rem 0;}
 .sm-navlink{display: block;line-height: 2;}
 .sm-navlink a{padding: 5px;}
+
+}
+
+
+/* nopage css starts here */
+.no-page-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100svh;
+background-color: #f4f4f4;
+padding: 20px;
+text-align: center;
+}
+    
+.no-page-content {
+background-color: white;
+padding: 40px;
+border-radius: 10px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+max-width: 500px;
+width: 100%;
+}
+    
+.no-page-title {
+color: #dc2626;
+font-size: 2.5rem;
+margin-bottom: 20px;
+font-weight: bold;
+}
+    
+.no-page-description {
+color: #4b5563;
+font-size: 1.25rem;
+margin-bottom: 30px;
+}
+    
+.no-page-button {
+background-color: #3b82f6;
+color: white;
+border: none;
+padding: 12px 24px;
+border-radius: 6px;
+font-size: 1rem;
+font-weight: 600;
+cursor: pointer;
+transition: background-color 0.3s ease;
+text-decoration: none;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+    
+.no-page-button:hover {
+background-color: #2563eb;
+}
+/* nopage css starts here */
+    
+    
+   
+  /*error css  */
+.error-message {
+background-color: #f8d7da;
+color: #721c24;
+border: 1px solid #f5c6cb;
+border-radius: 4px;
+padding: 10px;
+margin: auto;
+text-align: center;
 
 }
 
@@ -141,12 +220,12 @@ margin: auto;
 }
 
 .footer-newsletterbtn{
-  background-color: #cc0000;
-  padding: 1rem;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
+background-color: #cc0000;
+padding: 1rem;
+border: none;
+border-radius: 8px;
+color: #fff;
+cursor: pointer;
 }
 
  

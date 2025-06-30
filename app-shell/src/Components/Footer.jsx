@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
  
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import navlogo from '../assets/chats.png'
+import navlogo from '../assets/hypercell_social.png'
 import { useEffect, useState } from 'react';
 // import { auth, db } from '../db/firebase';
 // import { doc, getDoc } from 'firebase/firestore';
