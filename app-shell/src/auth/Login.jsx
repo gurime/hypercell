@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../db/firebase';
 export default function Login() {
@@ -68,7 +68,6 @@ setLoading(false);
 };
 return (
 <>
-<div className="login-page">
 <div className="login-container">
 <div className="login-card">
 <h1 className="login-title">Welcome Back</h1>
@@ -114,11 +113,11 @@ disabled={loading}>
 </form>
             
 <div className="login-footer">
-<p>Don&apos;t have an account? <a href="/signup" className="signup-link">Create Account</a></p>
+<p>Don&apos;t have an account? <Link to="/signup" className="login-link">Create Account</Link></p>
 </div>
 </div>
 </div>
-</div>
+
 
 {/* Toast Notification */}
 {toast.show && (

@@ -1,7 +1,7 @@
 
 import { db } from "../db/firebase";
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../db/firebase';
 import { doc, setDoc } from 'firebase/firestore';
@@ -70,14 +70,16 @@ return (
 <div className="signup-left-column">
 <img src={logo} alt="" />
 </div>
-  <div className="gradient-divider"></div>
-   <div className="particle"></div>
-        <div className="particle"></div>
-        <div className="particle"></div>
-        <div className="particle"></div>
-        <div className="particle"></div>
+
+<div className="gradient-divider"></div>
+
+<div className="particle"></div>
+<div className="particle"></div>
+<div className="particle"></div>
+<div className="particle"></div>
+<div className="particle"></div>
+
 <div className="signup-right-column">
-<div className="signup-container">
 <div className="signup-card">
 <h1 className="signup-title">Create Account</h1>
 <p className="signup-subtitle">Join Hypercell Social today</p>
@@ -143,11 +145,11 @@ disabled={loading}>
 </form>
 
 <div className="signup-footer">
-<p>Already have an account? <a href="/login" className="login-link">Sign In</a></p>
+<p>Already have an account? <Link to="/login" className="login-link">Sign In</Link></p>
 </div>
 </div>
 </div>
-</div>
+
 
 
 {toast.show && (
