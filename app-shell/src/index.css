@@ -308,11 +308,11 @@ color: white;
 }
 
 /* Smooth entrance animation */
-/* .navbar {
+.navbar {
   animation: slideDown 0.5s ease-out;
-} */
+}
 
-/* @keyframes slideDown {
+@keyframes slideDown {
   from {
     transform: translateY(-100%);
     opacity: 0;
@@ -321,7 +321,7 @@ color: white;
     transform: translateY(0);
     opacity: 1;
   }
-} */
+}
 
 /* Active link state (optional) */
 .icon-nav a.active {
@@ -940,37 +940,31 @@ font-size: 14px;
 margin-bottom: 24px;
 }  
 
- .main-container {
-  display: flex;
-margin: 0 auto;
-padding: 2rem;
-background: #1e293bf2;
-overflow: visible;
-}
+  .main-container {
+            display: flex;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #1e293bf2;
+            overflow: visible;
+            min-height: 100vh;
+            max-width: 1200px;
+        }
 
         
+             /* Category Tabs */
         .category-tabs {
             display: flex;
             gap: 0.5rem;
+            margin-bottom: 2rem;
             overflow-x: auto;
-            white-space: nowrap;
             padding: 1rem;     
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
+            border-radius: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
-        .category-tabs > * {
-  flex: 0 0 auto; /* ensures children don't shrink and can overflow */
-}
-
-.left-ad,
-.right-ad {
-  width: 200px;
-  flex-shrink: 0;
-  background-color: #334155;
-  padding: 1rem;
-  color: white;
-}
 
 .tab-button {
 padding: 0.75rem 1.5rem;
@@ -998,11 +992,12 @@ transform: translateY(-1px);
 }
 
 .content-area {
-flex: 1;
-  max-width: 600px;
-  padding: 1rem;
-  background-color: #0f172a;
-  color: white;
+border-radius: 15px;
+padding: 2rem;
+box-shadow: 0 8px 32px #0000001a;
+backdrop-filter: blur(10px);
+min-height: 70vh;
+
 }
 
 .category-content {
@@ -1050,13 +1045,13 @@ display: inline-block;
 
  .note-button {
   position: fixed;
-  bottom: 50px;        /* Increased from 20px to give more space from footer */
+  bottom: 350px;        /* Increased from 20px to give more space from footer */
   right: 20px;
   width: 56px;
   height: 56px;
   border: none;
   border-radius: 50%;
-  background-color: #2f4fef;
+  background-color: #8b5cf6;
   color: white;
   font-size: 28px;
   font-weight: bold;
@@ -1142,6 +1137,126 @@ font-weight: bold;
 display: inline-block;
 margin-bottom: 0.5rem;
 }
+
+ /* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f5f5f5;
+}
+
+.note-form {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-button,
+.submit-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #5a6268;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
 
 @media (max-width: 768px) {
 .main-container {
@@ -1654,123 +1769,3 @@ bottom: 420px;
 }
 
  /* admin css */
-
- /* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 8px;
-  padding: 0;
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.modal-header h2 {
-  margin: 0;
-  color: #333;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.close-button:hover {
-  background-color: #f5f5f5;
-}
-
-.note-form {
-  padding: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.cancel-button,
-.submit-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.cancel-button {
-  background-color: #6c757d;
-  color: white;
-}
-
-.cancel-button:hover {
-  background-color: #5a6268;
-}
-
-.submit-button {
-  background-color: #007bff;
-  color: white;
-}
-
-.submit-button:hover {
-  background-color: #0056b3;
-}
-
