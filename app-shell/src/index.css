@@ -1028,12 +1028,12 @@ padding-bottom: 0.5rem;
 display: inline-block;
 }
 
-.politics .section-title { border-color: #ef4444; }
-.sports .section-title { border-color: #eab308; }
-.music .section-title { border-color: #8b5cf6; }
-.fashion .section-title { border-color: #ec4899; }
-.gaming .section-title { border-color: #3b82f6; }
-.tech .section-title { border-color: #6366f1; }
+[data-category="politics"] .section-title { border-color: #ef4444; }
+[data-category="sports"] .section-title { border-color: #eab308; }
+[data-category="music"].section-title { border-color: #8b5cf6; }
+[data-category="fashion"] .section-title { border-color: #ec4899; }
+[data-category="gaming"] .section-title { border-color: #3b82f6; }
+[data-category="tech"] .section-title { border-color: #6366f1; }
 
  .note-button {
   position: fixed;
@@ -1097,10 +1097,21 @@ margin-bottom: 0.5rem;
 color: #fff;
 }
 
+.no-posts{
+  text-align: center;
+  color: #fff;
+}
+
 .post-meta {
 font-size: 0.9rem;
 color: #fff;
 margin-bottom: 0.75rem;
+display: flex;
+gap:1rem
+}
+
+.post-meta a{
+  text-decoration: none;
 }
 
 .post-excerpt {

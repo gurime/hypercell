@@ -294,7 +294,6 @@ if (!isSignedIn) {
 return (
 <div>
 <Navbar/>
-<SecNav/>
 <div className="admin-cms-container">
 <div className="admin-header">
 <p>Please sign in as an admin user to access the blog management system.</p>
@@ -339,7 +338,6 @@ required/>
 return (
 <>
 <Navbar/>
-<SecNav/>
 <div className="admin-cms-container">
 <div className="admin-header">
 <h1 className="admin-title">Blog CMS - Add New Post</h1>
@@ -389,14 +387,22 @@ required/>
 </div>
 
 <div className="admin-form-group">
-<label className="admin-label">Category</label>
-<input
-type="text"
-name="category"
-value={formData.category}
-onChange={handleInputChange}
-className="admin-input"
-required/>
+  <label className="admin-label">Category</label>
+  <select
+    name="category"
+    value={formData.category}
+    onChange={handleInputChange}
+    className="admin-input"
+    required
+  >
+    <option value="">Select a category</option>
+    <option value="politics">Politics</option>
+    <option value="sports">Sports</option>
+    <option value="music">Music</option>
+    <option value="fashion">Fashion</option>
+    <option value="gaming">Gaming</option>
+    <option value="tech">Technology</option>
+  </select>
 </div>
 
 <div className="admin-form-group">

@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Pencil, X } from 'lucide-react';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../db/firebase'; // Added auth import
-import { useParams, useNavigate } from 'react-router'; // Added useNavigate import
+import { useParams, useNavigate,Link } from 'react-router'; // Added useNavigate import
+import { onAuthStateChanged } from 'firebase/auth';
+import ClipLoader from 'react-spinners/ClipLoader';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 export default function CreateNote() {
   const [activeCategory, setActiveCategory] = useState('politics');
   const [postsList, setPostsList] = useState([]);
+  const [featuredPosts, setfeaturedPosts] = useState([]);
   const [userEmail, setUserEmail] = useState('');
+const [names, setNames] = useState('');
+const [ isSignedIn,setIsSignedIn] = useState()
+
   const [loading, setLoading] = useState(true); // Added loading state
   const [error, setError] = useState(null); // Added error state
   const [showModal, setShowModal] = useState(false);
@@ -23,6 +31,54 @@ export default function CreateNote() {
     }, 4000);
   };
 
+useEffect(() => {
+  let isMounted = true;
+
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+        if (userDocSnapshot.exists() && isMounted) {
+          const userData = userDocSnapshot.data();
+          // Updated line to include both first and last name
+          const fullName = `${userData.fname || ''} ${userData.lname || ''}`.trim();
+          setNames(fullName || userData.email || 'User');
+        } else if (isMounted) {
+          setNames('User');
+        }
+        if (isMounted) setIsSignedIn(true);
+      } catch (error) {
+        if (isMounted) {
+          setIsSignedIn(true);
+          setNames('User');
+        }
+      }
+    } else if (isMounted) {
+      setIsSignedIn(false);
+      setNames('');
+    }
+  });
+
+  return () => {
+    isMounted = false;
+    unsubscribe();
+  };
+}, []);
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'blogs'));
+        const featuredProductList = querySnapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
+        setfeaturedPosts(featuredProductList);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeaturedProducts();
+  }, []);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -76,56 +132,67 @@ export default function CreateNote() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    try {
-      const communityPost = {
-        title: formData.title,
-        excerpt: formData.excerpt,
-        content: formData.content,
-        category: formData.category, // Added category to save
-        timestamp: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'published',
-        reactions: 0,
-        annotations: 0,
-        authorId: auth.currentUser?.uid || null,
-       authorEmail: userEmail,
-      };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+    const communityPost = {
+      title: formData.title,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      category: formData.category,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'published',
+      reactions: 0,
+      annotations: 0,
+      authorId: auth.currentUser?.uid || null,
+      authorEmail: auth.currentUser?.email || userEmail,
+  
+    };
 
-      await addDoc(collection(db, 'communityPosts'), communityPost);
-      
-      // Refresh posts list after adding new post
-      const querySnapshot = await getDocs(collection(db, 'communityPosts'));
-      const updatedPostsList = querySnapshot.docs.map(doc => ({ 
-        id: doc.id, 
-        ...doc.data() 
-      }));
-      setPostsList(updatedPostsList);
-      
-      setFormData({
-        title: '',
-        excerpt: '',
-        content: '',
-        category: 'politics'
-      });
-      handleCloseModal();
-      showToast('Note created successfully!');
-      
-    } catch (error) {
-      console.error('Error adding document: ', error);
-      showToast('Error creating note. Please try again.', 'error');
-    }
-  };
+    await addDoc(collection(db, 'communityPosts'), communityPost);
+    
+    // Refresh posts list after adding new post
+    const querySnapshot = await getDocs(collection(db, 'communityPosts'));
+    const updatedPostsList = querySnapshot.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data() 
+    }));
+    setPostsList(updatedPostsList);
+    
+    setFormData({
+      title: '',
+      excerpt: '',
+      content: '',
+      category: 'politics'
+    });
+    handleCloseModal();
+    showToast('Note created successfully!');
+    
+  } catch (error) {
+    console.error('Error adding document: ', error);
+    showToast('Error creating note. Please try again.', 'error');
+  }
+};
+
 
   // Filter posts by active category
   const filteredPosts = postsList.filter(post => post.category === activeCategory);
 
-  if (loading) {
-    return <div className="loading">Loading posts...</div>;
-  }
+if (loading) {
+return (
+<>
+<Navbar />
+<div className="admin-loading"> 
+<ClipLoader size={50} color="#2637be"/>
+</div>
+<Footer />
+</>
+);
+}
+  
 
   if (error) {
     return <div className="error">Error: {error}</div>;
@@ -173,9 +240,49 @@ export default function CreateNote() {
           </button>
         </div>
 
-   <div className="content-area" data-category={activeCategory}>
+<div className="content-area" data-category={activeCategory}>
+  {/* Featured Posts Section */}
+  <div className="business-posts">
+    {featuredPosts.length > 0 && (
+      <>
+        <h2 data-title={activeCategory} className="section-title">
+          Featured {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} News
+        </h2>
+        {featuredPosts.map((product) => (
+          <div
+            key={product.id}
+            onClick={() => navigate(`/blog/${product._id}`)} // ✅ fixed
+            style={{cursor:'pointer'}}
+            className="post-card"
+          >
+            <div className="business-badge">Official</div>
+            <div className="post-title">{product.title}</div>
+            <div className="post-meta">
+              By <Link className="post-meta" to="/profile">{names}</Link> •{" "}
+              {product.createdAt?.seconds
+                ? new Date(product.createdAt.seconds * 1000).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : 'Recently'}
+              {product.reactions > 0 && ` • ${product.reactions} Reactions`}
+            </div>
+            <div className="post-excerpt">{product.content.slice(0, 100)}...</div>
+          </div>
+        ))}
+      </>
+    )}
+  </div>
+
+  {/* User Posts Section */}
   <div className="user-posts">
-    <h2 className="section-title">Recent Discussions - {activeCategory}</h2>
+    <h2 data-category={activeCategory} className="section-title">
+      Recent Discussions - {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
+    </h2>
+
     {filteredPosts.length === 0 ? (
       <div className="no-posts">No posts in this category yet.</div>
     ) : (
@@ -186,18 +293,29 @@ export default function CreateNote() {
           onClick={() => navigate(`/community/${post.id}`)}
           style={{ cursor: 'pointer' }}
         >
-          <div className="post-title">{post.title}</div>
-          <div className="post-meta">
-            By {post.authorName || 'Anonymous'} • 
-            {post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : 'Recently'} • 
-            {post.annotations || 0} Annotations
+          <div className="post-title">
+            {post.title.charAt(0).toUpperCase() + post.title.slice(1)}
           </div>
-          <div className="post-excerpt">{post.excerpt}</div>
+          <div className="post-meta">
+            By <Link className="post-meta" to="/profile">{names}</Link> •{" "}
+            {post.createdAt?.seconds
+              ? new Date(post.createdAt.seconds * 1000).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : 'Recently'}
+            {post.annotations > 0 && ` • ${post.annotations} Annotations`}
+          </div>
+          <div className="post-excerpt">{post.excerpt.slice(0,100)}...</div>
         </div>
       ))
     )}
   </div>
 </div>
+
 
 
         <button onClick={handleCreateNote} className='note-button'>
