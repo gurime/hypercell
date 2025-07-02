@@ -200,8 +200,7 @@ return (
 
   return (
     <>
-      <div className='main-container'>
-        <div className="category-tabs">
+            <div className="category-tabs">
           <button 
             className={`tab-button ${activeCategory === 'politics' ? 'active' : ''}`} 
             onClick={() => showCategory('politics')}
@@ -239,6 +238,9 @@ return (
             Tech
           </button>
         </div>
+      <div className='main-container'>
+        <div className="left-ad">ad</div>
+
 
 <div className="content-area" data-category={activeCategory}>
   {/* Featured Posts Section */}
@@ -420,8 +422,10 @@ return (
               ×
             </button>
           </div>
+           <div className="right-ad">ad</div>
         </div>
       )}
+     
     </>
   );
 }

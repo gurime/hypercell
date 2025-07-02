@@ -308,11 +308,11 @@ color: white;
 }
 
 /* Smooth entrance animation */
-.navbar {
+/* .navbar {
   animation: slideDown 0.5s ease-out;
-}
+} */
 
-@keyframes slideDown {
+/* @keyframes slideDown {
   from {
     transform: translateY(-100%);
     opacity: 0;
@@ -321,7 +321,7 @@ color: white;
     transform: translateY(0);
     opacity: 1;
   }
-}
+} */
 
 /* Active link state (optional) */
 .icon-nav a.active {
@@ -941,22 +941,36 @@ margin-bottom: 24px;
 }  
 
  .main-container {
+  display: flex;
 margin: 0 auto;
 padding: 2rem;
 background: #1e293bf2;
-overflow: hidden;
+overflow: visible;
 }
 
         
         .category-tabs {
             display: flex;
             gap: 0.5rem;
-            margin-bottom: 2rem;
             overflow-x: auto;
+            white-space: nowrap;
             padding: 1rem;     
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
         }
+
+        .category-tabs > * {
+  flex: 0 0 auto; /* ensures children don't shrink and can overflow */
+}
+
+.left-ad,
+.right-ad {
+  width: 200px;
+  flex-shrink: 0;
+  background-color: #334155;
+  padding: 1rem;
+  color: white;
+}
 
 .tab-button {
 padding: 0.75rem 1.5rem;
@@ -984,12 +998,11 @@ transform: translateY(-1px);
 }
 
 .content-area {
-border-radius: 15px;
-padding: 2rem;
-box-shadow: 0 8px 32px #0000001a;
-backdrop-filter: blur(10px);
-min-height: 70vh;
-
+flex: 1;
+  max-width: 600px;
+  padding: 1rem;
+  background-color: #0f172a;
+  color: white;
 }
 
 .category-content {
@@ -1037,13 +1050,13 @@ display: inline-block;
 
  .note-button {
   position: fixed;
-  bottom: 350px;        /* Increased from 20px to give more space from footer */
+  bottom: 50px;        /* Increased from 20px to give more space from footer */
   right: 20px;
   width: 56px;
   height: 56px;
   border: none;
   border-radius: 50%;
-  background-color: #8b5cf6;
+  background-color: #2f4fef;
   color: white;
   font-size: 28px;
   font-weight: bold;
@@ -1761,24 +1774,3 @@ bottom: 420px;
   background-color: #0056b3;
 }
 
-.note-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.2s;
-}
-
-.note-button:hover {
-  background-color: #0056b3;
-}
