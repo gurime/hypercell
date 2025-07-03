@@ -85,11 +85,8 @@ return name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
               <House size={20} color='#8b5cf6' />
             </Link>
 
-<div className="user-avatar">
-  {getInitials(names)}
-</div>
 
-<Link to='/profile' style={{color:'#fff'}}>{names}</Link>    
+<Link to='/profile' >{names}</Link>    
 
 <Link 
 to='/profile' 

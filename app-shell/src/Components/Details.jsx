@@ -72,6 +72,7 @@ return (
   return (
     <>
  <Navbar/>
+ <div className="main-container">
       <div className="blog-container">
         <div className="blog-details">
           <header className="blog-header">
@@ -126,7 +127,7 @@ return (
       </div>
       <div>
         user posts
-      </div>
+      </div></div>
       <Footer/>
       
       {/* Toast Notification */}
