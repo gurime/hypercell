@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import Navbar from './Navbar'
 import Footer from './Footer'
-import { Pen, Pencil } from 'lucide-react';
 import {  useNavigate } from 'react-router';
-import CreateNote from './CreateNote';
+// import CreateNote from './CreateNote';
 
 export default function Home() {
 const navigate = useNavigate();
@@ -13,7 +12,7 @@ const navigate = useNavigate();
   return (
     <>
       <Navbar/>
-     <CreateNote/>
+     {/* <CreateNote/> */}
       <Footer/>
     </>
   )
