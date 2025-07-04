@@ -75,7 +75,7 @@ return (
 <form onSubmit={handleSubmit} className="login-form">
 
 <div className="form-group">
-<label htmlFor="email" className="form-label">Email Address</label>
+<label style={{color:"#374151"}} htmlFor="email" className="form-label">Email Address</label>
 <input 
 type="email" 
 id="email" 
@@ -87,7 +87,7 @@ required />
 </div>
               
 <div className="form-group">
-<label htmlFor="password" className="form-label">Password</label>
+<label style={{color:"#374151"}} htmlFor="password" className="form-label">Password</label>
 <input 
 type="password" 
 id="password" 

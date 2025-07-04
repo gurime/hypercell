@@ -1,14 +1,18 @@
 import { Pencil, X } from 'lucide-react';
-import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router';
-import { db } from '../db/firebase';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import { auth, db } from '../db/firebase';
+import { addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function CreatePost() {
   const [activeCategory, setActiveCategory] = useState('politics');
     const [postsList, setPostsList] = useState([]);
     const [loading, setLoading] = useState(true); // Added loading state
       const [postType, setPostType] = useState('quick'); // 'quick' or 'detailed'
+        const [userEmail, setUserEmail] = useState('');
+      const [names, setNames] = useState('');
+      const [ isSignedIn,setIsSignedIn] = useState()
   const [formData, setFormData] = useState({
     title: '',
     category: 'politics',
@@ -27,6 +31,8 @@ export default function CreatePost() {
   };
    const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+   let { id } = useParams();
+
 
   // Sample images for each category (you can replace these with actual images)
   const categoryImages = {
@@ -47,6 +53,61 @@ export default function CreatePost() {
     gaming: 'Gaming news, reviews, and community discussions',
     tech: 'Technology news, innovations, and digital trends'
   };
+
+  useEffect(() => {
+    let isMounted = true;
+  
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDocSnapshot = await getDoc(userDocRef);
+          if (userDocSnapshot.exists() && isMounted) {
+            const userData = userDocSnapshot.data();
+            // Updated line to include both first and last name
+            const fullName = `${userData.fname || ''} ${userData.lname || ''}`.trim();
+            setNames(fullName || userData.email || 'User');
+          } else if (isMounted) {
+            setNames('User');
+          }
+          if (isMounted) setIsSignedIn(true);
+        } catch (error) {
+          if (isMounted) {
+            setIsSignedIn(true);
+            setNames('User');
+          }
+        }
+      } else if (isMounted) {
+        setIsSignedIn(false);
+        setNames('');
+      }
+    });
+  
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
+    useEffect(() => {
+      const fetchPosts = async () => {
+        try {
+          setLoading(true);
+          const querySnapshot = await getDocs(collection(db, 'communityPosts'));
+          const postsList = querySnapshot.docs.map(doc => ({ 
+            id: doc.id, // Changed _id to id to match your JSX
+            ...doc.data() 
+          }));
+          setPostsList(postsList);
+        } catch (error) {
+          setError(error.message);
+          console.error('Error fetching posts:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchPosts();
+    }, [id]);
 
   const showCategory = (categoryId) => {
     setActiveCategory(categoryId);
@@ -143,6 +204,14 @@ const handlePostTypeChange = (newType) => {
   };
 
 
+  
+
+  if (error) {
+    return <div className="error">Error: {error}</div>;
+  }
+  const filteredPosts = postsList.filter(post => post.category === activeCategory);
+
+
   return (
     <>
       <div className='jumbotron-container'>
@@ -208,16 +277,48 @@ const handlePostTypeChange = (newType) => {
       </div>
 
       {/* User Posts Section */}
+    {filteredPosts.length === 0 ? (
       <div className="user-posts-section">
-        <h2>Community Posts</h2>
+        <h2> No Community {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Posts</h2>
+        <div className='user-posts-placeholder'> <p>Community {activeCategory} will appear here</p></div>
+       
+        </div>
+    ) : (
+      <div className="user-posts-section">
+        <h2>Community {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Posts</h2>
         <div className="user-posts-placeholder">
-          <p>User posts will appear here</p>
-        
-        </div> 
+          {filteredPosts.map((post) => (
+            <div
+              key={post.id}
+              className="post-card"
+              onClick={() => navigate(`/community/${post.id}`)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div>
+                {names}
+                {post.content}
+                annotations {post.annotations}
+                reactions {post.reactions}
+                {post.createdAt?.seconds
+                  ? new Date(post.createdAt.seconds * 1000).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      // hour: '2-digit',
+                      // minute: '2-digit',
+                    })
+                  : 'Recently'}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+ 
             <button onClick={handleCreateNote} className='note-button'>
     <Pencil/>
   </button>
-      </div>
+    
 
       {/* Modal remains the same */}
 {showModal && (

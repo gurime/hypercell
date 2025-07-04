@@ -16,18 +16,25 @@ const location = useLocation();
 useEffect(() => {
 let isMounted = true;
 
+// In your Navbar component
 const unsubscribe = auth.onAuthStateChanged(async (user) => {
 if (user) {
 try {
-const userDocRef = doc(db, "users", user.uid);
+            // Get user's custom claims
+const idTokenResult = await user.getIdTokenResult();
+const isAdmin = idTokenResult.claims.admin === true;
+            
+// Choose the appropriate collection based on user type
+const collection = isAdmin ? "adminUsers" : "users";
+const userDocRef = doc(db, collection, user.uid);
 const userDocSnapshot = await getDoc(userDocRef);
+            
 if (userDocSnapshot.exists() && isMounted) {
 const userData = userDocSnapshot.data();
-// Updated line to include both first and last name
 const fullName = `${userData.fname || ''} ${userData.lname || ''}`.trim();
-setNames(fullName || userData.email || 'User');
+setNames(fullName || userData.email || (isAdmin ? 'Admin' : 'User'));
 } else if (isMounted) {
-setNames('User');
+setNames(isAdmin ? 'Admin' : 'User');
 }
 if (isMounted) setIsSignedIn(true);
 } catch (error) {
@@ -41,6 +48,7 @@ setIsSignedIn(false);
 setNames('');
 }
 });
+
 
 return () => {
 isMounted = false;

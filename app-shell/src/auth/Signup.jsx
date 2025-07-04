@@ -89,7 +89,7 @@ return (
 <form onSubmit={handleSubmit} className="signup-form">
 
 <div className="form-group">
-<label htmlFor="fname" className="form-label">First Name</label>
+<label style={{color:"#374151"}} htmlFor="fname" className="form-label">First Name</label>
 <input
 type="text"
 id="fname"
@@ -101,7 +101,7 @@ required />
 </div>
 
 <div className="form-group">
-<label htmlFor="username" className="form-label">Last Name</label>
+<label style={{color:"#374151"}} htmlFor="username" className="form-label">Last Name</label>
 <input
 type="text"
 id="lname"
@@ -113,7 +113,7 @@ required />
 </div>
 
 <div className="form-group">
-<label htmlFor="email" className="form-label">Email Address</label>
+<label style={{color:"#374151"}} htmlFor="email" className="form-label">Email Address</label>
 <input
 type="email"
 id="email"
@@ -125,7 +125,7 @@ required />
 </div>
 
 <div className="form-group">
-<label htmlFor="password" className="form-label">Password</label>
+<label style={{color:"#374151"}} htmlFor="password" className="form-label">Password</label>
 <input
 type="password"
 id="password"
