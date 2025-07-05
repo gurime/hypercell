@@ -1721,14 +1721,14 @@ margin-bottom: 24px;
 /* Company Posts Section */
 .company-posts-section {
   padding: 60px 20px;
-  background: #f8f9fa;
+  background: #1e293bf2;
   text-align: center;
 }
 
 .company-posts-section h2 {
   font-size: 2.5rem;
   margin-bottom: 30px;
-  color: #333;
+  color: #fff;
   font-weight: 700;
 }
 
@@ -1750,14 +1750,15 @@ margin-bottom: 24px;
 /* User Posts Section */
 .user-posts-section {
   padding: 60px 20px;
-  background: #fff;
+  background: #1e293bf2
+;
   min-height: 400px;
 }
 
 .user-posts-section h2 {
   font-size: 2.5rem;
   margin-bottom: 40px;
-  color: #333;
+  color: #fff;
   font-weight: 700;
   text-align: center;
 }

@@ -330,7 +330,6 @@ export default function CreatePost() {
           </button>
         </div>
       </div>
-      <div style={{backgroundColor:'#1e293bf2'}}>
 
       {/* Company Posts Section */}
       <div className="company-posts-section">
@@ -400,7 +399,7 @@ export default function CreatePost() {
           </div>
         </div>
       )}
- </div>
+
       <button onClick={handleCreateNote} className='note-button'>
         <Pencil/>
       </button>
