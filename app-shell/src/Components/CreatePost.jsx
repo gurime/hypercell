@@ -1,24 +1,24 @@
-/* eslint-disable no-unused-vars */
-import { Pencil, X, MessageSquare, Heart } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router';
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X } from 'lucide-react';
+import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
-export default function CreatePost() {
+export default function ModernFeed() {
   const location = useLocation();
   const navigate = useNavigate();
   let { id } = useParams();
   
-  // Get category from URL search params or default to 'politics'
   const searchParams = new URLSearchParams(location.search);
   const initialCategory = searchParams.get('category') || 'politics';
   
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [postsList, setPostsList] = useState([]);
+  const [likedPosts, setLikedPosts] = useState(new Set());
+  const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const [postType, setPostType] = useState('quick');
+  const [postType, setPostType] = useState('note');
   const [userEmail, setUserEmail] = useState('');
   const [names, setNames] = useState('');
   const [isSignedIn, setIsSignedIn] = useState();
@@ -29,10 +29,18 @@ export default function CreatePost() {
     url: '',
     tags: []
   });
-
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const [showModal, setShowModal] = useState(false);
+
+  const categories = [
+    { id: 'politics', name: 'Politics' },
+    { id: 'sports', name: 'Sports' },
+    { id: 'music', name: 'Music' },
+    { id: 'fashion', name: 'Fashion' },
+    { id: 'gaming', name: 'Gaming' },
+    { id: 'tech', name: 'Tech' }
+  ];
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type });
@@ -41,29 +49,9 @@ export default function CreatePost() {
     }, 4000);
   };
 
-  // Sample images for each category
-  const categoryImages = {
-    politics: '/images/assets/polbg.png',
-    sports: '/images/assets/spg.png',
-    music: '/images/assets/musbg.png',
-    fashion: '/images/assets/fashbg.png',
-    gaming: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop',
-    tech: '/images/assets/techbg.png'
-  };
-
-  // Category descriptions
-  const categoryDescriptions = {
-    politics: 'Stay informed with the latest political news and discussions',
-    sports: 'Your ultimate destination for sports news and updates',
-    music: 'Discover new artists, tracks, and music industry news',
-    fashion: 'Latest trends, styles, and fashion industry insights',
-    gaming: 'Gaming news, reviews, and community discussions',
-    tech: 'Technology news, innovations, and digital trends'
-  };
-
+  // Your existing useEffect and functions here...
   useEffect(() => {
     let isMounted = true;
-  
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -88,7 +76,6 @@ export default function CreatePost() {
         setNames('');
       }
     });
-  
     return () => {
       isMounted = false;
       unsubscribe();
@@ -107,7 +94,6 @@ export default function CreatePost() {
         setPostsList(postsList);
       } catch (error) {
         setError(error.message);
-        console.error('Error fetching posts:', error);
       } finally {
         setLoading(false);
       }
@@ -117,37 +103,70 @@ export default function CreatePost() {
 
   const showCategory = (categoryId) => {
     setActiveCategory(categoryId);
-    // Update URL with category parameter
     const newSearchParams = new URLSearchParams(location.search);
     newSearchParams.set('category', categoryId);
     navigate(`${location.pathname}?${newSearchParams.toString()}`, { replace: true });
   };
 
+  const handleLike = (postId) => {
+    setLikedPosts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+  };
+
+    const categoryImages = {
+    politics: '/images/assets/polbg.png',
+    sports: '/images/assets/spg.png',
+    music: '/images/assets/musbg.png',
+    fashion: '/images/assets/fashbg.png',
+    gaming: '/images/assets/gambg.png',
+    tech: '/images/assets/techbg.png'
+  };
+
+  // Category descriptions
+  const categoryDescriptions = {
+    politics: 'Stay informed with the latest political news and discussions',
+    sports: 'Your ultimate destination for sports news and updates',
+    music: 'Discover new artists, tracks, and music industry news',
+    fashion: 'Latest trends, styles, and fashion industry insights',
+    gaming: 'Gaming news, reviews, and community discussions',
+    tech: 'Technology news, innovations, and digital trends'
+  };
+
+
+  const handleBookmark = (postId) => {
+    setBookmarkedPosts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+  };
+
   const handleCreateNote = () => {
     setShowModal(true);
   };
-  
+
   const handleCloseModal = () => {
     setShowModal(false);
     setFormData({
       title: '',
       content: '',
-      category: activeCategory, // Use current active category
+      category: activeCategory,
       url: ''
     });
-    setPostType('quick');
+    setPostType('note');
   };
 
-  const handlePostTypeChange = (newType) => {
-    setPostType(newType);
-    if (newType === 'quick') {
-      setFormData(prev => ({
-        ...prev,
-        title: ''
-      }));
-    }
-  };
-  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -155,7 +174,7 @@ export default function CreatePost() {
       [name]: value
     }));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -163,6 +182,7 @@ export default function CreatePost() {
       const communityPost = {
         title: formData.title,
         content: formData.content,
+        url: formData.url,
         category: formData.category,
         timestamp: new Date(),
         createdAt: new Date(),
@@ -172,11 +192,13 @@ export default function CreatePost() {
         annotations: 0,
         authorId: auth.currentUser?.uid || null,
         authorEmail: auth.currentUser?.email || userEmail,
+        author: names || 'User',
+        type: postType,
+        avatar: names ? names.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'
       };
-  
+
       await addDoc(collection(db, 'communityPosts'), communityPost);
       
-      // Refresh posts list after adding new post
       const querySnapshot = await getDocs(collection(db, 'communityPosts'));
       const updatedPostsList = querySnapshot.docs.map(doc => ({ 
         id: doc.id, 
@@ -187,19 +209,20 @@ export default function CreatePost() {
       setFormData({
         title: '',
         content: '',
-        category: activeCategory // Use current active category
+        category: activeCategory,
+        url: ''
       });
       handleCloseModal();
-      showToast('Note created successfully!');
+      showToast('Post created successfully!');
       
     } catch (error) {
       console.error('Error adding document: ', error);
-      showToast('Error creating note. Please try again.', 'error');
+      showToast('Error creating post. Please try again.', 'error');
     }
   };
-  
+
   const getCharacterLimit = () => {
-    return postType === 'quick' ? 280 : 10000;
+    return postType === 'note' ? 300 : 5000;
   };
 
   const getCharacterCount = () => {
@@ -210,75 +233,36 @@ export default function CreatePost() {
     return getCharacterCount() > getCharacterLimit();
   };
 
-  // Handle annotation click
-  const handleAnnotationClick = async (e, postId) => {
-    e.stopPropagation(); // Prevent navigation to post details
+  const filteredPosts = postsList.filter(post => post.category === activeCategory);
+
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return 'Recently';
     
-    try {
-      const postRef = doc(db, 'communityPosts', postId);
-      await updateDoc(postRef, {
-        annotations: increment(1)
-      });
-      
-      // Update local state
-      setPostsList(prevPosts => 
-        prevPosts.map(post => 
-          post.id === postId 
-            ? { ...post, annotations: (post.annotations || 0) + 1 }
-            : post
-        )
-      );
-      
-      showToast('Annotation added!');
-    } catch (error) {
-      console.error('Error updating annotations:', error);
-      showToast('Error adding annotation', 'error');
-    }
+    const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    
+    if (hours < 1) return 'Just now';
+    if (hours < 24) return `${hours}h ago`;
+    if (hours < 48) return '1d ago';
+    return date.toLocaleDateString();
   };
 
-  // Handle reaction click
-  const handleReactionClick = async (e, postId) => {
-    e.stopPropagation(); // Prevent navigation to post details
-    
-    try {
-      const postRef = doc(db, 'communityPosts', postId);
-      await updateDoc(postRef, {
-        reactions: increment(1)
-      });
-      
-      // Update local state
-      setPostsList(prevPosts => 
-        prevPosts.map(post => 
-          post.id === postId 
-            ? { ...post, reactions: (post.reactions || 0) + 1 }
-            : post
-        )
-      );
-      
-      showToast('Reaction added!');
-    } catch (error) {
-      console.error('Error updating reactions:', error);
-      showToast('Error adding reaction', 'error');
-    }
-  };
-
-  // Handle post card click (for navigation)
-  const handlePostCardClick = (postId) => {
-    // Navigate to post details with current category in URL
-    const newSearchParams = new URLSearchParams();
-    newSearchParams.set('category', activeCategory);
-    navigate(`/community/${postId}?${newSearchParams.toString()}`);
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
   if (error) {
-    return <div className="error">Error: {error}</div>;
+    return <div style={{padding: '20px', color: 'red'}}>Error: {error}</div>;
   }
-  
-  const filteredPosts = postsList.filter(post => post.category === activeCategory);
+
+
 
   return (
     <>
-      <div className='jumbotron-container'>
+          <div className='jumbotron-container'>
         <div 
           className='datawallpaper'
           style={{
@@ -290,160 +274,142 @@ export default function CreatePost() {
             <p className="category-description">{categoryDescriptions[activeCategory]}</p>
           </div>
         </div>
-        
-        <div className="category-tabs">
-          <button 
-            className={`tab-button ${activeCategory === 'politics' ? 'active' : ''}`} 
-            onClick={() => showCategory('politics')}
-          >
-            Politics
-          </button>
-          <button 
-            className={`tab-button ${activeCategory === 'sports' ? 'active' : ''}`} 
-            onClick={() => showCategory('sports')}
-          >
-            Sports
-          </button>
-          <button 
-            className={`tab-button ${activeCategory === 'music' ? 'active' : ''}`} 
-            onClick={() => showCategory('music')}
-          >
-            Music
-          </button>
-          <button 
-            className={`tab-button ${activeCategory === 'fashion' ? 'active' : ''}`} 
-            onClick={() => showCategory('fashion')}
-          >
-            Fashion
-          </button>
-          <button 
-            className={`tab-button ${activeCategory === 'gaming' ? 'active' : ''}`} 
-            onClick={() => showCategory('gaming')}
-          >
-            Gaming
-          </button>
-          <button 
-            className={`tab-button ${activeCategory === 'tech' ? 'active' : ''}`} 
-            onClick={() => showCategory('tech')}
-          >
-            Tech
-          </button>
         </div>
+        <div className='feed-blok-container'>
+    <div className="feed-container">
+      {/* Category Navigation */}
+      <div className="category-nav">
+        {categories.map(category => (
+          <button
+            key={category.id}
+            onClick={() => showCategory(category.id)}
+            className={`category-pill ${activeCategory === category.id ? 'active' : ''}`}
+          >
+            {category.name}
+          </button>
+        ))}
       </div>
 
-      {/* Company Posts Section */}
-      <div className="company-posts-section">
-        <h2>Featured {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Posts</h2>
-        <div className="company-posts-placeholder">
-          <p>Company posts for {activeCategory} will appear here</p>
-        </div>
-      </div>
-
-      {/* User Posts Section */}
-      {filteredPosts.length === 0 ? (
-        <div className="user-posts-section">
-          <h2>Community {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Posts</h2>
-          <div className='user-posts-empty'>
-            <p>Community posts for {activeCategory} will appear here</p>
-          </div>
-        </div>
-      ) : (
-        <div className="user-posts-section">
-          <h2>Community {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)} Posts</h2>
-          <div className="user-posts-grid">
-            {filteredPosts.map((post) => (
-              <div
-                key={post.id}
-                className="post-card"
-                onClick={() => handlePostCardClick(post.id)}
-              >
-                <div className="post-header">
-                  <div className="post-author">{names}</div>
-                  <div className="post-date">
-                    {post.createdAt?.seconds
-                      ? new Date(post.createdAt.seconds * 1000).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })
-                      : 'Recently'}
-                  </div>
-                </div>
-                
-                <div className="post-content">
-                  {post.content}
-                </div>
-                
-                <div className="post-stats">
-                  <button 
-                    className="post-stat-button"
-                    onClick={(e) => handleAnnotationClick(e, post.id)}
-                    title="Add annotation"
-                  >
-                    <MessageSquare size={16} />
-                    <span className="stat-label">annotations</span>
-                    <span className="stat-value">{post.annotations || 0}</span>
-                  </button>
-                  <button 
-                    className="post-stat-button"
-                    onClick={(e) => handleReactionClick(e, post.id)}
-                    title="Add reaction"
-                  >
-                    <Heart size={16} />
-                    <span className="stat-label">reactions</span>
-                    <span className="stat-value">{post.reactions || 0}</span>
-                  </button>
+      {/* Posts Feed */}
+      <div className="posts-feed">
+        {filteredPosts.map(post => (
+          <div key={post.id} className="post-card">
+            {/* Post Header */}
+            <div className="post-header">
+              <div className="post-avatar">
+                {getInitials(post.author || names)}
+              </div>
+              <div className="post-author-info">
+                <div className="post-author-name">{post.author || names || 'User'}    <span className={`post-type-badge ${post.type === 'detailed' || post.type === 'letter' ? 'letter' : 'note'}`}>
+                    {post.type === 'detailed' ? 'letter' : post.type || 'note'}
+                  </span></div>
+                <div className="post-meta">
+             
+                  <span className="post-timestamp">{formatTimestamp(post.timestamp)}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+              <button className="post-menu">
+                <MoreHorizontal size={20} />
+              </button>
+            </div>
 
-      <button onClick={handleCreateNote} className='note-button'>
-        <Pencil/>
+            {/* Post Content */}
+            <div className="post-content">
+              {post.title && (
+                <h2 className="post-title">{post.title}</h2>
+              )}
+              <p className="post-text">{post.content}</p>
+              
+        
+                <Link to={`/community/${post.id}`}  className="post-link">
+                  Read more
+                </Link>
+          
+            </div>
+
+            {/* Interaction Bar */}
+            <div className="interaction-bar">
+              <div className="interaction-buttons">
+                <button
+                  onClick={() => handleLike(post.id)}
+                  className={`interaction-btn ${likedPosts.has(post.id) ? 'liked' : ''}`}
+                >
+                  <Heart size={16} fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} />
+                  <span>{post.reactions || 0}</span>
+                </button>
+                
+                <button className="interaction-btn">
+                  <MessageSquare size={16} />
+                  <span>{post.annotations || 0}</span>
+                </button>
+                
+                <button className="interaction-btn">
+                  <Share2 size={16} />
+                  <span>Share</span>
+                </button>
+              </div>
+              
+              <button
+                onClick={() => handleBookmark(post.id)}
+                className={`bookmark-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`}
+              >
+                <Bookmark size={16} fill={bookmarkedPosts.has(post.id) ? 'currentColor' : 'none'} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Load More Button */}
+      <div className="load-more-container">
+        <button className="load-more-btn">
+          Load More Posts
+        </button>
+      </div>
+
+      {/* Floating Action Button */}
+      <button onClick={handleCreateNote} className="fab">
+        <Pencil size={24} />
       </button>
-    
+      
       {/* Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2>Create New Post</h2>
-              <button onClick={handleCloseModal} className="close-button">
+              <h2 className="modal-title">Create New Post</h2>
+              <button onClick={handleCloseModal} className="modal-close">
                 <X size={24} />
               </button>
             </div>
             
-            {/* Post Type Toggle */}
             <div className="post-type-toggle">
               <button 
                 type="button"
-                className={`toggle-btn ${postType === 'quick' ? 'active' : ''}`}
-                onClick={() => setPostType('quick')}
+                className={`toggle-btn ${postType === 'note' ? 'active' : ''}`}
+                onClick={() => setPostType('note')}
               >
-               Note
+                Note
               </button>
               <button 
                 type="button"
-                className={`toggle-btn ${postType === 'detailed' ? 'active' : ''}`}
-                onClick={() => setPostType('detailed')}
+                className={`toggle-btn ${postType === 'letter' ? 'active' : ''}`}
+                onClick={() => setPostType('letter')}
               >
-            Letter
+                Letter
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="note-form">
-              {/* Only show title for detailed posts */}
-              {postType === 'detailed' && (
+            <form onSubmit={handleSubmit}>
+              {postType === 'letter' && (
                 <div className="form-group">
-                  <label htmlFor="title">Title</label>
+                  <label className="form-label">Title</label>
                   <input
                     type="text"
-                    id="title"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
+                    className="form-input"
                     placeholder="Enter post title"
                     required
                   />
@@ -451,75 +417,58 @@ export default function CreatePost() {
               )}
 
               <div className="form-group">
-                <label htmlFor="category">Category</label>
+                <label className="form-label">Category</label>
                 <select
-                  id="category"
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
+                  className="form-select"
                   required
                 >
-                  <option value="politics">Politics</option>
-                  <option value="sports">Sports</option>
-                  <option value="music">Music</option>
-                  <option value="fashion">Fashion</option>
-                  <option value="gaming">Gaming</option>
-                  <option value="tech">Technology</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
                 </select>
               </div>
 
               <div className="form-group">
-                <label htmlFor="content">
-                  {postType === 'quick' ? 'Note' : 'Letter'}
+                <label className="form-label">
+                  {postType === 'note' ? 'Note' : 'Letter'}
                 </label>
                 <textarea
-                  id="content"
                   name="content"
                   value={formData.content}
                   onChange={handleInputChange}
-                  placeholder={
-                    postType === 'quick' 
-                      ? "Write a Note!" 
-                      : "Write your detailed Letter here."
-                  }
+                  placeholder={postType === 'note' ? "Write a Note!" : "Write your detailed Letter here."}
                   maxLength={getCharacterLimit()}
-                  rows={postType === 'quick' ? 4 : 8}
+                  className="form-textarea"
                   required
-                  className={isOverLimit() ? 'over-limit' : ''}
                 />
                 <div className={`character-count ${isOverLimit() ? 'over-limit' : ''}`}>
                   {getCharacterCount()}/{getCharacterLimit()} characters
-                  {postType === 'detailed' && (
-                    <span className="limit-note"> (No strict limit for detailed posts)</span>
-                  )}
                 </div>
               </div>
 
-              {/* URL field for detailed posts */}
-              {postType === 'detailed' && (
+              {postType === 'letter' && (
                 <div className="form-group">
-                  <label htmlFor="url">Link (Optional)</label>
+                  <label className="form-label">Link (Optional)</label>
                   <input
                     type="url"
-                    id="url"
                     name="url"
                     value={formData.url}
                     onChange={handleInputChange}
+                    className="form-input"
                     placeholder="https://example.com"
                   />
                 </div>
               )}
 
               <div className="form-actions">
-                <button type="button" onClick={handleCloseModal} className="cancel-button">
+                <button type="button" onClick={handleCloseModal} className="btn-secondary">
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
-                  className="submit-button"
-                  disabled={isOverLimit()}
-                >
-                  {postType === 'quick' ? 'Post' : 'Create Post'}
+                <button type="submit" className="btn-primary" disabled={isOverLimit()}>
+                  {postType === 'note' ? 'Post Note' : 'Create Letter'}
                 </button>
               </div>
             </form>
@@ -529,20 +478,11 @@ export default function CreatePost() {
       
       {toast.show && (
         <div className={`toast ${toast.type}`}>
-          <div className="toast-content">
-            <span className="toast-icon">
-              {toast.type === 'success' ? '✓' : '✕'}
-            </span>
-            <span className="toast-message">{toast.message}</span>
-            <button 
-              className="toast-close"
-              onClick={() => setToast({ show: false, message: '', type: '' })}
-            >
-              ×
-            </button>
-          </div>
+          {toast.message}
         </div>
       )}
+    </div>
+    </div>
     </>
   );
 }

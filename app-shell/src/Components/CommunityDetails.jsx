@@ -158,17 +158,27 @@ const handleAnnotationClick = async (e) => {
   }
 
   try {
-    const postRef = doc(db, 'communityPosts', id);
-    await updateDoc(postRef, { 
-      annotations: increment(1) 
+    const postRef = doc(db, 'communityPosts', postId);
+    
+    // Get the current post document to read annotations array
+    const postDoc = await getDoc(postRef);
+    const annotations = postDoc.exists() ? postDoc.data().annotations || [] : [];
+    const newAnnotationsLength = annotations.length + 1; // Assuming adding one annotation
+    
+    // Update the annotations length or array accordingly
+    await updateDoc(postRef, {
+      annotations: newAnnotationsLength
     });
-
-    setPost(prev => ({
-      ...prev,
-      annotations: (prev.annotations || 0) + 1
-    }));
-
-    setHasAnnotated(true);
+    
+    // Update local state
+    setPostsList(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? { ...post, annotations: newAnnotationsLength }
+          : post
+      )
+    );
+    
     showToast('Annotation added!');
   } catch (error) {
     console.error('Error updating annotations:', error);
@@ -176,7 +186,6 @@ const handleAnnotationClick = async (e) => {
   }
 };
 
-// Fix 3: Updated handleReactionClick
 const handleReactionClick = async (e) => {
   e.stopPropagation();
   
@@ -288,7 +297,7 @@ const handleCommentReaction = async (commentId) => {
 
   if (loading) {
     return (
-      <div className="page-container">
+      <div className="community-container">
         <div className="community-post-details-container">
           <div className="loading-spinner">
             <div className="loading-text">Loading post...</div>
@@ -300,7 +309,7 @@ const handleCommentReaction = async (commentId) => {
 
   if (error) {
     return (
-      <div className="page-container">
+      <div className="community-container">
         <div className="community-post-details-container">
           <div className="error-message">
             <h2 className="error-title">Oops! Something went wrong</h2>
@@ -316,7 +325,7 @@ const handleCommentReaction = async (commentId) => {
 
   if (!post) {
     return (
-      <div className="page-container">
+      <div className="community-container">
         <div className="community-post-details-container">
           <div className="error-message centered">
             <h2 className="not-found-title">Post not found</h2>
@@ -332,7 +341,7 @@ const handleCommentReaction = async (commentId) => {
   return (
     <>
     <Navbar/>
-    <div className="page-container">
+    <div className="community-container">
       <div className="community-post-details-container">
         <div className="community-post-card">
           {/* Header */}
