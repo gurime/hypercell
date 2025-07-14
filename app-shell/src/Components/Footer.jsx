@@ -1,18 +1,12 @@
 /* eslint-disable no-unused-vars */
  
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import navlogo from '../assets/hypercell_social.png'
-import { useEffect, useState } from 'react';
-// import { auth, db } from '../db/firebase';
-// import { doc, getDoc } from 'firebase/firestore';
+import {  NavLink, useNavigate } from 'react-router-dom';
+import navlogo from '/images/assets/hypercell_social.png'
+
 
 
 export default function Footer() { 
-const location = useLocation();
 const navigate = useNavigate();
-const iSNewsLetterPage = location.pathname === '/newsletter';
-const [isSignedIn, setIsSignedIn] = useState(false);
-const [names, setNames] = useState('');
 
 
 // Check if current route is /contact
@@ -28,56 +22,22 @@ textDecoration: 'none'
 });
 
 
-// useEffect(() => {
-// const unsubscribe = auth.onAuthStateChanged(async (user) => {
-// if (user) {
-// try {
-// const userDocRef = doc(db, "users", user.uid);
-// const userDocSnapshot = await getDoc(userDocRef);
-// if (userDocSnapshot.exists()) {
-// const userData = userDocSnapshot.data();
-// // Get the full name from fname and lname
-// const fullName = `${userData.fname || ''} `.trim();
-// setNames(fullName || userData.email || 'User');
-// } else {
-// setNames('User');
-// }
-// setIsSignedIn(true);
-// } catch (error) {
-// setIsSignedIn(true); // Still signed in even if we can't fetch user data
-// setNames('User');
-// }
-// } else {
-// setIsSignedIn(false);
-// setNames('');
-// }
-// }); 
-// return () => unsubscribe();
-// }, []);
 
 
 return(
 <>
 
 <footer className='footer'>
-{!iSNewsLetterPage &&(
-<div className='footer-headline'>
-<button className='footer-newsletterbtn' onClick={() => navigate('/newsletter')}>
-Sign-Up for our Newsletter
-</button>
-</div> )}
+
 
 {/*fourth tablebox stops here*/}
 
 <hr style={{color:'#fff',border:'solid 1px'}}/>
 
 <div  className="nav logo-footer">
- {isSignedIn ? (  
- <img src={gpremium} alt="" />
- ) : (
+
   <img  title='Home Page' style={{marginRight:'auto '}} onClick={() => navigate('/')} src={navlogo}  alt='...'  />
 
- )}
 
 
 

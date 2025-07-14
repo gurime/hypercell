@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../db/firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import logo from '../assets/hypercell_social.png'
+import logo from '/images/assets/hypercell_social.png'
 export default function Signup() {
 const navigate = useNavigate();
 const [loading, setLoading] = useState(false);

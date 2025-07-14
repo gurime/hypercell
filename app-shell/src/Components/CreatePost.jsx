@@ -43,12 +43,12 @@ export default function CreatePost() {
 
   // Sample images for each category
   const categoryImages = {
-    politics: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&h=600&fit=crop',
-    sports: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&h=600&fit=crop',
-    music: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=600&fit=crop',
-    fashion: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&h=600&fit=crop',
+    politics: '/images/assets/polbg.png',
+    sports: '/images/assets/spg.png',
+    music: '/images/assets/musbg.png',
+    fashion: '/images/assets/fashbg.png',
     gaming: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&h=600&fit=crop',
-    tech: 'https://cdn.impossibleimages.ai/wp-content/uploads/2023/04/25130031/AI-Background-Image-Generator-How-It-Works-and-Why-You-Need-It.jpg'
+    tech: '/images/assets/techbg.png'
   };
 
   // Category descriptions
@@ -286,7 +286,7 @@ export default function CreatePost() {
           }}
         >
           <div className="category-overlay">
-            <h1 className="category-title">{activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h1>
+            {/* <h1 className="category-title">{activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h1> */}
             <p className="category-description">{categoryDescriptions[activeCategory]}</p>
           </div>
         </div>

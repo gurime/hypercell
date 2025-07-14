@@ -1,4 +1,4 @@
-import navlogo from '../assets/hypercell_social.png'
+import navlogo from '/images/assets/hypercell_social.png'
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from "react-router";
 import {House, CircleUser, Bell, Users, LogOut, LogIn, UserPlus} from 'lucide-react'
