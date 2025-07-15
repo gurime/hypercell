@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X, Smile, AlertCircle } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment } from 'firebase/firestore';
@@ -22,16 +22,64 @@ export default function ModernFeed() {
   const [userEmail, setUserEmail] = useState('');
   const [names, setNames] = useState('');
   const [isSignedIn, setIsSignedIn] = useState();
+  const [showClarifyModal, setShowClarifyModal] = useState(false);
+const [currentClarifyPost, setCurrentClarifyPost] = useState(null);
+const [clarifyData, setClarifyData] = useState({
+  intention: '',
+  emoji: ''
+});
+
   const [formData, setFormData] = useState({
     title: '',
-    category: initialCategory,
-    content: '',
-    url: '',
-    tags: []
+  category: initialCategory,
+  content: '',
+  url: '',
+  tags: [],
+  intention: '',
+  emoji: ''
   });
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const [showModal, setShowModal] = useState(false);
+
+  // 4. Add these new handler functions
+const handleClarify = (postId) => {
+  setCurrentClarifyPost(postId);
+  setShowClarifyModal(true);
+};
+
+const handleCloseClarifyModal = () => {
+  setShowClarifyModal(false);
+  setCurrentClarifyPost(null);
+  setClarifyData({ intention: '', emoji: '' });
+};
+
+const handleClarifySubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+    const postRef = doc(db, 'communityPosts', currentClarifyPost);
+    await updateDoc(postRef, {
+      intention: clarifyData.intention,
+      emoji: clarifyData.emoji,
+      updatedAt: new Date()
+    });
+    
+    // Update local state
+    setPostsList(prev => prev.map(post => 
+      post.id === currentClarifyPost 
+        ? { ...post, intention: clarifyData.intention, emoji: clarifyData.emoji }
+        : post
+    ));
+    
+    handleCloseClarifyModal();
+    showToast('Clarification added successfully!');
+    
+  } catch (error) {
+    console.error('Error adding clarification: ', error);
+    showToast('Error adding clarification. Please try again.', 'error');
+  }
+};
 
   const categories = [
     { id: 'politics', name: 'Politics' },
@@ -155,17 +203,18 @@ export default function ModernFeed() {
   const handleCreateNote = () => {
     setShowModal(true);
   };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setFormData({
-      title: '',
-      content: '',
-      category: activeCategory,
-      url: ''
-    });
-    setPostType('note');
-  };
+const handleCloseModal = () => {
+  setShowModal(false);
+  setFormData({
+    title: '',
+    content: '',
+    category: activeCategory,
+    url: '',
+    intention: '',
+    emoji: ''
+  });
+  setPostType('note');
+};
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -179,23 +228,25 @@ export default function ModernFeed() {
     e.preventDefault();
     
     try {
-      const communityPost = {
-        title: formData.title,
-        content: formData.content,
-        url: formData.url,
-        category: formData.category,
-        timestamp: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'published',
-        reactions: 0,
-        annotations: 0,
-        authorId: auth.currentUser?.uid || null,
-        authorEmail: auth.currentUser?.email || userEmail,
-        author: names || 'User',
-        type: postType,
-        avatar: names ? names.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'
-      };
+    const communityPost = {
+      title: formData.title,
+      content: formData.content,
+      url: formData.url,
+      category: formData.category,
+      timestamp: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'published',
+      reactions: 0,
+      annotations: 0,
+      authorId: auth.currentUser?.uid || null,
+      authorEmail: auth.currentUser?.email || userEmail,
+      author: names || 'User',
+      type: postType, // This will be either 'note' or 'letter'
+      avatar: names ? names.split(' ').map(n => n[0]).join('').toUpperCase() : 'U',
+      intention: formData.intention,
+      emoji: formData.emoji
+    };
 
       await addDoc(collection(db, 'communityPosts'), communityPost);
       
@@ -291,7 +342,7 @@ export default function ModernFeed() {
       </div>
 
       {/* Posts Feed */}
-      <div className="posts-feed">
+      <div className="posts-feed">        
         {filteredPosts.map(post => (
           <div key={post.id} className="post-card">
             {/* Post Header */}
@@ -300,9 +351,10 @@ export default function ModernFeed() {
                 {getInitials(post.author || names)}
               </div>
               <div className="post-author-info">
-                <div className="post-author-name">{post.author || names || 'User'}    <span className={`post-type-badge ${post.type === 'detailed' || post.type === 'letter' ? 'letter' : 'note'}`}>
+<div className="post-author-name">{post.author || names || 'User'}    
+<span className={`post-type-badge ${post.type === 'detailed' || post.type === 'letter' ? 'letter' : 'note'}`}>
                     {post.type === 'detailed' ? 'letter' : post.type || 'note'}
-                  </span></div>
+</span></div>
                 <div className="post-meta">
              
                   <span className="post-timestamp">{formatTimestamp(post.timestamp)}</span>
@@ -314,58 +366,81 @@ export default function ModernFeed() {
             </div>
 
             {/* Post Content */}
-            <div className="post-content">
-              {post.title && (
-                <h2 className="post-title">{post.title}</h2>
-              )}
-              <p className="post-text">{post.content}</p>
-              
-        
-                <Link to={`/community/${post.id}`}  className="post-link">
-                  Read more
-                </Link>
-          
-            </div>
+    <div className="post-content">
+  {post.title && (
+    <h2 className="post-title">{post.title}</h2>
+  )}
+  
+  <p className="post-text">
+    {(post.type === 'letter' || post.type === 'detailed')
+      ? (post.content.length > 100
+          ? `${post.content.slice(0, 100)}...`
+          : post.content)
+      : post.content}
+  </p>
+  
+  {(post.intention || post.emoji) && (
+    <div className="post-clarification">
+      {post.emoji && <span className="clarify-emoji">{post.emoji}</span>}
+      {post.intention && <span className="clarify-text">"{post.intention}"</span>}
+    </div>
+  )}
+  
+  {/* Only show "Read more" for letters/detailed posts or truncated content */}
+  {((post.type === 'letter' || post.type === 'detailed') && post.content.length > 100) && (
+    <Link to={`/community/${post.id}`} className="post-link">
+      Read more
+    </Link>
+  )}
+</div>
 
             {/* Interaction Bar */}
-            <div className="interaction-bar">
-              <div className="interaction-buttons">
-                <button
-                  onClick={() => handleLike(post.id)}
-                  className={`interaction-btn ${likedPosts.has(post.id) ? 'liked' : ''}`}
-                >
-                  <Heart size={16} fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} />
-                  <span>{post.reactions || 0}</span>
-                </button>
-                
-                <button className="interaction-btn">
-                  <MessageSquare size={16} />
-                  <span>{post.annotations || 0}</span>
-                </button>
-                
-                <button className="interaction-btn">
-                  <Share2 size={16} />
-                  <span>Share</span>
-                </button>
-              </div>
-              
-              <button
-                onClick={() => handleBookmark(post.id)}
-                className={`bookmark-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`}
-              >
-                <Bookmark size={16} fill={bookmarkedPosts.has(post.id) ? 'currentColor' : 'none'} />
-              </button>
-            </div>
-          </div>
+          <div className="interaction-bar">
+  <div className="interaction-buttons">
+    <button
+      onClick={() => handleLike(post.id)}
+      className={`interaction-btn ${likedPosts.has(post.id) ? 'liked' : ''}`}
+    >
+      <Heart size={16} fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} />
+      <span>{post.reactions || 0}</span>
+    </button>
+    
+    <button className="interaction-btn">
+      <MessageSquare size={16} />
+      <span>{post.annotations || 0}</span>
+    </button>
+    
+    <button 
+      onClick={() => handleClarify(post.id)}
+      className="interaction-btn"
+    >
+      <AlertCircle size={16} />
+      <span>Clarify</span>
+    </button>
+    
+    <button className="interaction-btn">
+      <Share2 size={16} />
+      <span>Share</span>
+    </button>
+  </div>
+  
+  <button
+    onClick={() => handleBookmark(post.id)}
+    className={`bookmark-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`}
+  >
+    <Bookmark size={16} fill={bookmarkedPosts.has(post.id) ? 'currentColor' : 'none'} />
+  </button>
+</div>
+
+      </div>
         ))}
       </div>
-
-      {/* Load More Button */}
+{/* 
       <div className="load-more-container">
         <button className="load-more-btn">
           Load More Posts
         </button>
-      </div>
+      </div> */}
 
       {/* Floating Action Button */}
       <button onClick={handleCreateNote} className="fab">
@@ -432,6 +507,42 @@ export default function ModernFeed() {
               </div>
 
               <div className="form-group">
+  <label className="form-label">Intention (Optional)</label>
+  <input
+    type="text"
+    name="intention"
+    value={formData.intention}
+    onChange={handleInputChange}
+    className="form-input"
+    placeholder="e.g., This note is meant to be nice"
+    maxLength={100}
+  />
+</div>
+
+<div className="form-group">
+  <label className="form-label">Emoji (Optional)</label>
+  <select
+    name="emoji"
+    value={formData.emoji}
+    onChange={handleInputChange}
+    className="form-select"
+  >
+    <option value="">Select an emoji</option>
+    <option value="😊">😊 Happy</option>
+    <option value="😢">😢 Sad</option>
+    <option value="😡">😡 Angry</option>
+    <option value="😍">😍 Love</option>
+    <option value="🤔">🤔 Thinking</option>
+    <option value="😂">😂 Funny</option>
+    <option value="😎">😎 Cool</option>
+    <option value="🙏">🙏 Grateful</option>
+    <option value="💪">💪 Strong</option>
+    <option value="🎉">🎉 Celebration</option>
+  </select>
+</div>
+
+
+              <div className="form-group">
                 <label className="form-label">
                   {postType === 'note' ? 'Note' : 'Letter'}
                 </label>
@@ -475,6 +586,66 @@ export default function ModernFeed() {
           </div>
         </div>
       )}
+
+      {showClarifyModal && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h2 className="modal-title">Add Clarification</h2>
+        <button onClick={handleCloseClarifyModal} className="modal-close">
+          <X size={24} />
+        </button>
+      </div>
+      
+      <form onSubmit={handleClarifySubmit}>
+        <div className="form-group">
+          <label className="form-label">Intention</label>
+          <input
+            type="text"
+            value={clarifyData.intention}
+            onChange={(e) => setClarifyData(prev => ({ ...prev, intention: e.target.value }))}
+            className="form-input"
+            placeholder="e.g., This note is meant to be nice"
+            maxLength={100}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Emoji</label>
+          <select
+            value={clarifyData.emoji}
+            onChange={(e) => setClarifyData(prev => ({ ...prev, emoji: e.target.value }))}
+            className="form-select"
+            required
+          >
+            <option value="">Select an emoji</option>
+            <option value="😊">😊 Happy</option>
+            <option value="😢">😢 Sad</option>
+            <option value="😡">😡 Angry</option>
+            <option value="😍">😍 Love</option>
+            <option value="🤔">🤔 Thinking</option>
+            <option value="😂">😂 Funny</option>
+            <option value="😎">😎 Cool</option>
+            <option value="🙏">🙏 Grateful</option>
+            <option value="💪">💪 Strong</option>
+            <option value="🎉">🎉 Celebration</option>
+          </select>
+        </div>
+
+        <div className="form-actions">
+          <button type="button" onClick={handleCloseClarifyModal} className="btn-secondary">
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary">
+            Add Clarification
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       
       {toast.show && (
         <div className={`toast ${toast.type}`}>
