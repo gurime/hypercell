@@ -155,18 +155,70 @@ const handleClarifySubmit = async (e) => {
     newSearchParams.set('category', categoryId);
     navigate(`${location.pathname}?${newSearchParams.toString()}`, { replace: true });
   };
+const handleLike = async (postId) => {
+  if (!auth.currentUser) {
+    alert('Sign in to like');
+    return;
+  }
 
-  const handleLike = (postId) => {
+  const isCurrentlyLiked = likedPosts.has(postId);
+  const postRef = doc(db, 'communityPosts', postId);
+  
+  // Update liked posts state
+  setLikedPosts(prev => {
+    const newSet = new Set(prev);
+    if (isCurrentlyLiked) {
+      newSet.delete(postId);
+    } else {
+      newSet.add(postId);
+    }
+    return newSet;
+  });
+
+  // Update posts list (optimistic update)
+  setPostsList(prevPosts =>
+    prevPosts.map(post =>
+      post.id === postId
+        ? {
+            ...post,
+            reactions: (post.reactions || 0) + (isCurrentlyLiked ? -1 : 1),
+          }
+        : post
+    )
+  );
+
+  // Update Firestore
+  try {
+    if (isCurrentlyLiked) {
+      await updateDoc(postRef, { reactions: increment(-1) });
+    } else {
+      await updateDoc(postRef, { reactions: increment(1) });
+    }
+  } catch (error) {
+    console.error('Error updating like:', error);
+    // Revert optimistic update on error
+    setPostsList(prevPosts =>
+      prevPosts.map(post =>
+        post.id === postId
+          ? {
+              ...post,
+              reactions: (post.reactions || 0) + (isCurrentlyLiked ? 1 : -1),
+            }
+          : post
+      )
+    );
     setLikedPosts(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(postId)) {
-        newSet.delete(postId);
-      } else {
+      if (isCurrentlyLiked) {
         newSet.add(postId);
+      } else {
+        newSet.delete(postId);
       }
       return newSet;
     });
-  };
+  }
+};
+
 
     const categoryImages = {
     politics: '/images/assets/polbg.png',
@@ -342,7 +394,8 @@ const handleCloseModal = () => {
       </div>
 
       {/* Posts Feed */}
-      <div className="posts-feed">        
+      <div className="posts-feed">  
+         
         {filteredPosts.map(post => (
           <div key={post.id} className="post-card">
             {/* Post Header */}
@@ -366,7 +419,7 @@ const handleCloseModal = () => {
             </div>
 
             {/* Post Content */}
-    <div className="post-content">
+<div className="post-content">
   {post.title && (
     <h2 className="post-title">{post.title}</h2>
   )}
@@ -386,8 +439,8 @@ const handleCloseModal = () => {
     </div>
   )}
   
-  {/* Only show "Read more" for letters/detailed posts or truncated content */}
-  {((post.type === 'letter' || post.type === 'detailed') && post.content.length > 100) && (
+  {/* Always show "Read more" for letters, regardless of length */}
+  {(post.type === 'letter' || post.type === 'detailed') && (
     <Link to={`/community/${post.id}`} className="post-link">
       Read more
     </Link>
@@ -424,12 +477,12 @@ const handleCloseModal = () => {
     </button>
   </div>
   
-  <button
+  {/* <button
     onClick={() => handleBookmark(post.id)}
     className={`bookmark-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`}
   >
     <Bookmark size={16} fill={bookmarkedPosts.has(post.id) ? 'currentColor' : 'none'} />
-  </button>
+  </button> */}
 </div>
 
       </div>

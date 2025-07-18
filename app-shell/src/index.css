@@ -1606,15 +1606,11 @@ margin-bottom: 24px;
 .jumbotron-container {
   position: relative;
   width: 100%;
-  height: 100svh;
+  /* height: 100svh; */
   border-bottom: 3px solid #fff;
 }
 
-@media(max-width:768px){
-  .jumbotron-container{
-    height: 35svh;
-  }
-}
+
 /* Main background image */
 .datawallpaper {
   background-position: center;
@@ -1784,13 +1780,6 @@ margin-bottom: 24px;
 .toast-close:hover {
   opacity: 0.8;
 }
-.user-posts-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 600px; /* Twitter's main column width */
-  margin: 0 auto;
-}
 
 
 
@@ -1800,13 +1789,13 @@ margin-bottom: 24px;
             gap: 1rem;
         }
 .feed-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 20px;
   background-color: transparent;
   min-height: 100vh;
-  border-right: solid 1px #fff;
-border-left: solid 1px #fff;
+  border-right: solid 1px #6c6c6c;
+border-left: solid 1px #6c6c6c;
   overflow: visible; /* must be visible for sticky to work */
 
 }
@@ -1996,14 +1985,13 @@ line-height: 1.75rem;
 .interaction-bar {
   padding: 12px 16px;
   border-top: 1px solid #e1e5e9;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+
 }
 
 .interaction-buttons {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  justify-content: space-between;  gap: 20px;
 }
 
 .interaction-btn {
