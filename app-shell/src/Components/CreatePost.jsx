@@ -16,23 +16,25 @@ export default function ModernFeed() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [activeDropdown, setActiveDropdown] = useState(null);
 const [editingPost, setEditingPost] = useState(null);
-const [editFormData, setEditFormData] = useState({
-  title: '',
-  content: '',
-  intention: '',
-  emoji: ''
-});
+
 
   const [postsList, setPostsList] = useState([]);
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); 
+   const [showModal, setShowModal] = useState(false);
   const [postType, setPostType] = useState('note');
   const [userEmail, setUserEmail] = useState('');
   const [names, setNames] = useState('');
   const [isSignedIn, setIsSignedIn] = useState();
   const [showClarifyModal, setShowClarifyModal] = useState(false);
 const [currentClarifyPost, setCurrentClarifyPost] = useState(null);
+const [editFormData, setEditFormData] = useState({
+  title: '',
+  content: '',
+  intention: '',
+  emoji: ''
+});
 const [clarifyData, setClarifyData] = useState({
   intention: '',
   emoji: ''
@@ -49,7 +51,12 @@ const [clarifyData, setClarifyData] = useState({
   });
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
-  const [showModal, setShowModal] = useState(false);
+  const showToast = (message, type = 'success') => {
+setToast({ show: true, message, type });
+setTimeout(() => {
+setToast({ show: false, message: '', type: '' });
+}, 4000);
+};
 
   // 4. Add these new handler functions
 const handleClarify = (postId) => {
@@ -186,12 +193,6 @@ const handleClarifySubmit = async (e) => {
     { id: 'tech', name: 'Tech' }
   ];
 
-  const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type });
-    setTimeout(() => {
-      setToast({ show: false, message: '', type: '' });
-    }, 4000);
-  };
 
   // Your existing useEffect and functions here...
   useEffect(() => {
@@ -421,7 +422,7 @@ const handleCloseModal = () => {
   };
 
 const getCharacterLimit = () => {
-  return postType === 'note' ? 280 : 2000; // Updated limits
+  return postType === 'note' ? 280 : 10000; // Updated limits
 };
 
 // Add a preview character limit constant
@@ -635,12 +636,12 @@ const getDomainFromUrl = (url) => {
       <span>Share</span>
     </button>
 
-      <button
+      {/* <button
     onClick={() => handleBookmark(post.id)}
     className={`bookmark-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`}
   >
     <Bookmark size={16} fill={bookmarkedPosts.has(post.id) ? 'currentColor' : 'none'} />
-  </button>
+  </button> */}
   </div>
 
 </div>
@@ -941,7 +942,18 @@ const getDomainFromUrl = (url) => {
 )}
       {toast.show && (
         <div className={`toast ${toast.type}`}>
-          {toast.message}
+          <div className="toast-content">
+            <span className="toast-icon">
+              {toast.type === 'success' ? '✓' : '✕'}
+            </span>
+            <span className="toast-message">{toast.message}</span>
+            <button 
+              className="toast-close"
+              onClick={() => setToast({ show: false, message: '', type: '' })}
+            >
+              ×
+            </button>
+          </div>
         </div>
       )}
     </div>
