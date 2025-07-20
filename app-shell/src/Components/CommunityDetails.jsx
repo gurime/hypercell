@@ -18,9 +18,7 @@ export default function CommunityPostDetails() {
   const [loading, setLoading] = useState(true);
   const [commentLoading, setCommentLoading] = useState(false);
   const [names, setNames] = useState('Current User');
-  const [hasAnnotated, setHasAnnotated] = useState(false);
   const [reactedComments, setReactedComments] = useState(new Set());
-  const [hasReacted, setHasReacted] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
@@ -153,47 +151,10 @@ useEffect(() => {
     });
   };
 
-const getCommentsCount = async (postId) => {
-  try {
-    // Get reference to the comments subcollection for this post
-    const commentsRef = collection(db, 'communityPosts', postId, 'comments');
-    
-    // Get all comments for this post
-    const commentsSnapshot = await getDocs(commentsRef);
-    
-    // Return the count of comments
-    return commentsSnapshot.size;
-  } catch (error) {
-    console.error('Error getting comments count:', error);
-    return 0; // Return 0 if there's an error
-  }
-};
 
-// Alternative approach if you store comments count in the post document
-const getCommentsCountFromPost = async (postId) => {
-  try {
-    const postRef = doc(db, 'communityPosts', postId);
-    const postDoc = await getDoc(postRef);
-    
-    if (postDoc.exists()) {
-      const postData = postDoc.data();
-      return postData.commentsCount || 0;
-    }
-    return 0;
-  } catch (error) {
-    console.error('Error getting comments count from post:', error);
-    return 0;
-  }
-};
 
-// Usage example:
-const loadCommentsCount = async () => {
-  const count = await getCommentsCount(id);
-  setPost(prevPost => ({
-    ...prevPost,
-    commentsCount: count
-  }));
-};
+
+
 
 const handleReactionClick = async (postId) => {
   if (!auth.currentUser) {

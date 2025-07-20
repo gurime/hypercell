@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X, Smile, AlertCircle } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X, AlertCircle } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
-import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
 export default function ModernFeed() {
@@ -14,6 +14,15 @@ export default function ModernFeed() {
   const initialCategory = searchParams.get('category') || 'politics';
   
   const [activeCategory, setActiveCategory] = useState(initialCategory);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+const [editingPost, setEditingPost] = useState(null);
+const [editFormData, setEditFormData] = useState({
+  title: '',
+  content: '',
+  intention: '',
+  emoji: ''
+});
+
   const [postsList, setPostsList] = useState([]);
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
@@ -47,6 +56,93 @@ const handleClarify = (postId) => {
   setCurrentClarifyPost(postId);
   setShowClarifyModal(true);
 };
+
+const handleDropdownToggle = (postId) => {
+  setActiveDropdown(activeDropdown === postId ? null : postId);
+};
+
+const handleEditPost = (post) => {
+  setEditingPost(post);
+  setEditFormData({
+    title: post.title || '',
+    content: post.content || '',
+    intention: post.intention || '',
+    emoji: post.emoji || ''
+  });
+  setActiveDropdown(null);
+};
+
+const handleDeletePost = async (postId) => {
+  if (window.confirm('Are you sure you want to delete this post?')) {
+    try {
+      await deleteDoc(doc(db, 'communityPosts', postId));
+      
+      // Update local state
+      setPostsList(prev => prev.filter(post => post.id !== postId));
+      setActiveDropdown(null);
+      showToast('Post deleted successfully!');
+      
+    } catch (error) {
+      console.error('Error deleting post: ', error);
+      showToast('Error deleting post. Please try again.', 'error');
+    }
+  }
+};
+
+const handleEditSubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+    const postRef = doc(db, 'communityPosts', editingPost.id);
+    await updateDoc(postRef, {
+      title: editFormData.title,
+      content: editFormData.content,
+      intention: editFormData.intention,
+      emoji: editFormData.emoji,
+      updatedAt: new Date()
+    });
+    
+    // Update local state
+    setPostsList(prev => prev.map(post => 
+      post.id === editingPost.id 
+        ? { 
+            ...post, 
+            title: editFormData.title,
+            content: editFormData.content,
+            intention: editFormData.intention,
+            emoji: editFormData.emoji
+          }
+        : post
+    ));
+    
+    setEditingPost(null);
+    showToast('Post updated successfully!');
+    
+  } catch (error) {
+    console.error('Error updating post: ', error);
+    showToast('Error updating post. Please try again.', 'error');
+  }
+};
+
+const handleCloseEdit = () => {
+  setEditingPost(null);
+  setEditFormData({
+    title: '',
+    content: '',
+    intention: '',
+    emoji: ''
+  });
+};
+
+// Add this useEffect to handle clicking outside dropdown
+useEffect(() => {
+  const handleClickOutside = () => {
+    setActiveDropdown(null);
+  };
+  
+  document.addEventListener('click', handleClickOutside);
+  return () => document.removeEventListener('click', handleClickOutside);
+}, []);
 
 const handleCloseClarifyModal = () => {
   setShowClarifyModal(false);
@@ -324,17 +420,36 @@ const handleCloseModal = () => {
     }
   };
 
-  const getCharacterLimit = () => {
-    return postType === 'note' ? 300 : 5000;
-  };
+const getCharacterLimit = () => {
+  return postType === 'note' ? 280 : 2000; // Updated limits
+};
 
-  const getCharacterCount = () => {
-    return formData.content.length;
-  };
+// Add a preview character limit constant
+const PREVIEW_LIMIT = 150; // Characters to show in preview
 
-  const isOverLimit = () => {
-    return getCharacterCount() > getCharacterLimit();
-  };
+
+
+const getCharacterCount = () => {
+  return formData.content.length;
+};
+
+const isOverLimit = () => {
+  return getCharacterCount() > getCharacterLimit();
+};
+
+// Helper function to get preview text
+const getPreviewText = (content, type) => {
+  if (type === 'note') {
+    return content; // Notes always show in full
+  }
+  
+  // For letters, always show preview with ... if longer than PREVIEW_LIMIT
+  if (content.length > PREVIEW_LIMIT) {
+    return `${content.slice(0, PREVIEW_LIMIT)}...`;
+  }
+  
+  return content;
+};
 
   const filteredPosts = postsList.filter(post => post.category === activeCategory);
 
@@ -361,7 +476,14 @@ const handleCloseModal = () => {
     return <div style={{padding: '20px', color: 'red'}}>Error: {error}</div>;
   }
 
-
+const getDomainFromUrl = (url) => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname.replace('www.', '');
+  } catch (error) {
+    return url;
+  }
+};
 
   return (
     <>
@@ -413,9 +535,37 @@ const handleCloseModal = () => {
                   <span className="post-timestamp">{formatTimestamp(post.timestamp)}</span>
                 </div>
               </div>
-              <button className="post-menu">
-                <MoreHorizontal size={20} />
-              </button>
+              <div className="post-menu-container">
+  <button 
+    className="post-menu"
+    onClick={(e) => {
+      e.stopPropagation();
+      handleDropdownToggle(post.id);
+    }}
+  >
+    <MoreHorizontal size={20} />
+  </button>
+  
+  {activeDropdown === post.id && (
+    <div className="post-dropdown">
+      <button 
+        className="dropdown-item"
+        onClick={() => handleEditPost(post)}
+      >
+        <Pencil size={16} />
+        Edit Post
+      </button>
+      <button 
+        className="dropdown-item delete"
+        onClick={() => handleDeletePost(post.id)}
+      >
+        <X size={16} />
+        Delete Post
+      </button>
+    </div>
+  )}
+</div>
+
             </div>
 
             {/* Post Content */}
@@ -425,11 +575,7 @@ const handleCloseModal = () => {
   )}
   
   <p className="post-text">
-    {(post.type === 'letter' || post.type === 'detailed')
-      ? (post.content.length > 100
-          ? `${post.content.slice(0, 100)}...`
-          : post.content)
-      : post.content}
+    {getPreviewText(post.content, post.type)}
   </p>
   
   {(post.intention || post.emoji) && (
@@ -438,14 +584,27 @@ const handleCloseModal = () => {
       {post.intention && <span className="clarify-text">"{post.intention}"</span>}
     </div>
   )}
-  
-  {/* Always show "Read more" for letters, regardless of length */}
-  {(post.type === 'letter' || post.type === 'detailed') && (
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+
+{post.url && (
+  <div className="url-link-container">
+    <a href={post.url} target="_blank" rel="noopener noreferrer" className="post-link">
+      {getDomainFromUrl(post.url)}
+    </a>
+    <ExternalLink size={16} />
+  </div>
+)}
+  {/* Only show "Read more" for letters when content exceeds preview limit */}
+  {(post.type === 'letter' || post.type === 'detailed') && post.content.length > PREVIEW_LIMIT && (
     <Link to={`/community/${post.id}`} className="post-link">
       Read more
     </Link>
   )}
+  </div>
+
 </div>
+
 
             {/* Interaction Bar */}
           <div className="interaction-bar">
@@ -468,21 +627,22 @@ const handleCloseModal = () => {
       className="interaction-btn"
     >
       <AlertCircle size={16} />
-      <span>Clarify</span>
+      <span>Edit Clarify</span>
     </button>
     
     <button className="interaction-btn">
       <Share2 size={16} />
       <span>Share</span>
     </button>
-  </div>
-  
-  {/* <button
+
+      <button
     onClick={() => handleBookmark(post.id)}
     className={`bookmark-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`}
   >
     <Bookmark size={16} fill={bookmarkedPosts.has(post.id) ? 'currentColor' : 'none'} />
-  </button> */}
+  </button>
+  </div>
+
 </div>
 
       </div>
@@ -612,20 +772,20 @@ const handleCloseModal = () => {
                   {getCharacterCount()}/{getCharacterLimit()} characters
                 </div>
               </div>
+{(postType === 'letter' || postType === 'note') && (
+  <div className="form-group">
+    <label className="form-label">Link (Optional)</label>
+    <input
+      type="url"
+      name="url"
+      value={formData.url}
+      onChange={handleInputChange}
+      className="form-input"
+      placeholder="https://example.com"
+    />
+  </div>
+)}
 
-              {postType === 'letter' && (
-                <div className="form-group">
-                  <label className="form-label">Link (Optional)</label>
-                  <input
-                    type="url"
-                    name="url"
-                    value={formData.url}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="https://example.com"
-                  />
-                </div>
-              )}
 
               <div className="form-actions">
                 <button type="button" onClick={handleCloseModal} className="btn-secondary">
@@ -644,7 +804,7 @@ const handleCloseModal = () => {
   <div className="modal-overlay">
     <div className="modal-content">
       <div className="modal-header">
-        <h2 className="modal-title">Add Clarification</h2>
+        <h2 className="modal-title">Edit Clarification</h2>
         <button onClick={handleCloseClarifyModal} className="modal-close">
           <X size={24} />
         </button>
@@ -658,7 +818,7 @@ const handleCloseModal = () => {
             value={clarifyData.intention}
             onChange={(e) => setClarifyData(prev => ({ ...prev, intention: e.target.value }))}
             className="form-input"
-            placeholder="e.g., This note is meant to be nice"
+            placeholder="e.g., Edit this to clarify your intention"
             maxLength={100}
             required
           />
@@ -699,7 +859,86 @@ const handleCloseModal = () => {
   </div>
 )}
 
+      {editingPost && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h2 className="modal-title">Edit Post</h2>
+        <button onClick={handleCloseEdit} className="modal-close">
+          <X size={24} />
+        </button>
+      </div>
       
+      <form onSubmit={handleEditSubmit}>
+        {(editingPost.type === 'letter' || editingPost.type === 'detailed') && (
+          <div className="form-group">
+            <label className="form-label">Title</label>
+            <input
+              type="text"
+              value={editFormData.title}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="form-input"
+              placeholder="Enter post title"
+            />
+          </div>
+        )}
+
+        <div className="form-group">
+          <label className="form-label">Intention (Optional)</label>
+          <input
+            type="text"
+            value={editFormData.intention}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, intention: e.target.value }))}
+            className="form-input"
+            placeholder="e.g., This note is meant to be nice"
+            maxLength={100}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Emoji (Optional)</label>
+          <select
+            value={editFormData.emoji}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, emoji: e.target.value }))}
+            className="form-select"
+          >
+            <option value="">Select an emoji</option>
+            <option value="😊">😊 Happy</option>
+            <option value="😢">😢 Sad</option>
+            <option value="😡">😡 Angry</option>
+            <option value="😍">😍 Love</option>
+            <option value="🤔">🤔 Thinking</option>
+            <option value="😂">😂 Funny</option>
+            <option value="😎">😎 Cool</option>
+            <option value="🙏">🙏 Grateful</option>
+            <option value="💪">💪 Strong</option>
+            <option value="🎉">🎉 Celebration</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Content</label>
+          <textarea
+            value={editFormData.content}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, content: e.target.value }))}
+            placeholder="Edit your content here..."
+            className="form-textarea"
+            required
+          />
+        </div>
+
+        <div className="form-actions">
+          <button type="button" onClick={handleCloseEdit} className="btn-secondary">
+            Cancel
+          </button>
+          <button type="submit" className="btn-primary">
+            Update Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
       {toast.show && (
         <div className={`toast ${toast.type}`}>
           {toast.message}
