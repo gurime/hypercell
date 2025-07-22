@@ -190,8 +190,39 @@ const handleClarifySubmit = async (e) => {
     { id: 'music', name: 'Music' },
     { id: 'fashion', name: 'Fashion' },
     { id: 'gaming', name: 'Gaming' },
-    { id: 'tech', name: 'Tech' }
+    { id: 'tech', name: 'Tech' },
+    { id: 'community', name: 'Community' },
+    { id: 'lifestyle', name: 'Lifestyle' },
+    { id: 'health', name: 'Health' },
+    { id: 'education', name: 'Education' },
+    { id: 'entertainment', name: 'Entertainment' }
   ];
+
+
+    const categoryImages = {
+    politics: '/images/assets/polbg.png',
+    sports: '/images/assets/spg.png',
+    music: '/images/assets/musbg.png',
+    fashion: '/images/assets/fashbg.png',
+    gaming: '/images/assets/gambg.png',
+    tech: '/images/assets/techbg.png'
+  };
+
+  // Category descriptions
+  const categoryDescriptions = {
+    politics: 'Stay informed with the latest political news and discussions',
+    sports: 'Your ultimate destination for sports news and updates',
+    music: 'Discover new artists, tracks, and music industry news',
+    fashion: 'Latest trends, styles, and fashion industry insights',
+    gaming: 'Gaming news, reviews, and community discussions',
+    tech: 'Technology news, innovations, and digital trends',
+    community: 'Connect with others and share your thoughts on various topics',
+    lifestyle: 'Explore lifestyle tips, trends, and personal stories',
+    health: 'Health tips, wellness advice, and medical news',
+    education: 'Educational resources, discussions, and learning opportunities',
+    entertainment: 'Entertainment news, reviews, and pop culture discussions'
+  };
+
 
 
   // Your existing useEffect and functions here...
@@ -317,37 +348,6 @@ const handleLike = async (postId) => {
 };
 
 
-    const categoryImages = {
-    politics: '/images/assets/polbg.png',
-    sports: '/images/assets/spg.png',
-    music: '/images/assets/musbg.png',
-    fashion: '/images/assets/fashbg.png',
-    gaming: '/images/assets/gambg.png',
-    tech: '/images/assets/techbg.png'
-  };
-
-  // Category descriptions
-  const categoryDescriptions = {
-    politics: 'Stay informed with the latest political news and discussions',
-    sports: 'Your ultimate destination for sports news and updates',
-    music: 'Discover new artists, tracks, and music industry news',
-    fashion: 'Latest trends, styles, and fashion industry insights',
-    gaming: 'Gaming news, reviews, and community discussions',
-    tech: 'Technology news, innovations, and digital trends'
-  };
-
-
-  const handleBookmark = (postId) => {
-    setBookmarkedPosts(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(postId)) {
-        newSet.delete(postId);
-      } else {
-        newSet.add(postId);
-      }
-      return newSet;
-    });
-  };
 
   const handleCreateNote = () => {
     setShowModal(true);
@@ -501,10 +501,7 @@ const getDomainFromUrl = (url) => {
           </div>
         </div>
         </div>
-        <div className='feed-blok-container'>
-    <div className="feed-container">
-      {/* Category Navigation */}
-      <div className="category-nav">
+              <div className="category-nav">
         {categories.map(category => (
           <button
             key={category.id}
@@ -515,6 +512,10 @@ const getDomainFromUrl = (url) => {
           </button>
         ))}
       </div>
+        <div className='feed-blok-container'>
+    <div className="feed-container">
+      {/* Category Navigation */}
+   
 
       {/* Posts Feed */}
       <div className="posts-feed">  
@@ -753,6 +754,89 @@ const getDomainFromUrl = (url) => {
     <option value="🙏">🙏 Grateful</option>
     <option value="💪">💪 Strong</option>
     <option value="🎉">🎉 Celebration</option>
+    <option value="😃">😃 Excited</option>
+<option value="😁">😁 Grinning</option>
+<option value="😆">😆 Laughing</option>
+<option value="😅">😅 Nervous</option>
+<option value="🥰">🥰 Adoring</option>
+<option value="😘">😘 Kiss</option>
+<option value="😭">😭 Crying</option>
+<option value="😱">😱 Shocked</option>
+<option value="😴">😴 Sleepy</option>
+<option value="🤯">🤯 Mind Blown</option>
+Actions & Gestures
+<option value="👍">👍 Thumbs Up</option>
+<option value="👎">👎 Thumbs Down</option>
+<option value="✌️">✌️ Peace</option>
+<option value="🤗">🤗 Hug</option>
+<option value="🙌">🙌 Celebration</option>
+<option value="🤞">🤞 Luck</option>
+<option value="👏">👏 Clapping</option>
+<option value="🙄">🙄 Eye Roll</option>
+<option value="🤷">🤷 Shrug</option>
+Objects & Symbols
+<option value="❤️">❤️ Heart</option>
+<option value="🔥">🔥 Fire</option>
+<option value="🌟">🌟 Star</option>
+<option value="🎯">🎯 Target</option>
+<option value="💯">💯 100%</option>
+<option value="✨">✨ Sparkle</option>
+<option value="🎊">🎊 Party</option>
+<option value="🏆">🏆 Winner</option>
+Animals & Nature
+<option value="🐶">🐶 Dog</option>
+<option value="🐱">🐱 Cat</option>
+<option value="🦁">🦁 Lion</option>
+<option value="🐝">🐝 Bee</option>
+<option value="🌹">🌹 Rose</option>
+<option value="🌞">🌞 Sun</option>
+<option value="🇺🇸">🇺🇸 USA</option>
+<option value="🇬🇧">🇬🇧 UK</option>
+<option value="🇨🇦">🇨🇦 Canada</option>
+<option value="🇦🇺">🇦🇺 Australia</option>
+<option value="🇩🇪">🇩🇪 Germany</option>
+<option value="🇫🇷">🇫🇷 France</option>
+<option value="🇮🇹">🇮🇹 Italy</option>
+<option value="🇯🇵">🇯🇵 Japan</option>
+<option value="🇰🇷">🇰🇷 South Korea</option>
+<option value="🇧🇷">🇧🇷 Brazil</option>
+<option value="🇮🇳">🇮🇳 India</option>
+<option value="🇨🇳">🇨🇳 China</option>
+<option value="🇷🇺">🇷🇺 Russia</option>
+<option value="🇿🇦">🇿🇦 South Africa</option>
+<option value="🇲🇽">🇲🇽 Mexico</option>
+Regional & Special Flags
+<option value="🇪🇺">🇪🇺 European Union</option>
+<option value="🏴󠁧󠁢󠁥󠁮󠁧󠁿">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+<option value="🏴󠁧󠁢󠁳󠁣󠁴󠁿">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</option>
+<option value="🏴󠁧󠁢󠁷󠁬󠁳󠁿">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</option>
+<option value="🏳️‍🌈">🏳️‍🌈 Pride</option>
+<option value="🏳️‍⚧️">🏳️‍⚧️ Transgender</option>
+<option value="❤️‍🔥">❤️‍🔥 Heart (Queer Love)</option>
+Sexual Orientation Flags
+<option value="💗">💗 Lesbian (Pink Flag)</option>
+<option value="💙">💙 Gay (Blue Flag)</option>
+<option value="💜">💜 Bisexual</option>
+<option value="🖤">🖤 Asexual</option>
+<option value="🤎">🤎 Pansexual</option>
+Gender Identity Flags
+<option value="⚧️">⚧️ Trans Symbol</option>
+<option value="♾️">♾️ Non-Binary</option>
+<option value="💛">💛 Genderfluid</option>
+<option value="🤍">🤍 Agender</option>
+Inclusive & Intersectional Pride
+<option value="✊🏿">✊🏿 Black LGBTQ+</option>
+<option value="🌍">🌍 Intersex</option>
+<option value="🏴‍☠️">🏴‍☠️ Pirate</option>
+<option value="🏁">🏁 Chequered Flag</option>
+<option value="🚩">🚩 Triangular Flag</option>
+Fun & Symbolic Flags
+<option value="🏳️">🏳️ White Flag</option>
+<option value="🏴">🏴 Black Flag</option>
+<option value="🇺🇳">🇺🇳 United Nations</option>
+<option value="🇦🇶">🇦🇶 Antarctica</option> (Yes, it exists!)
+<option value="🏴󠁵󠁳󠁴󠁸󠁿">🏴󠁵󠁳󠁴󠁸󠁿 Texas</option> (US State flag example)
+
   </select>
 </div>
 
@@ -834,17 +918,101 @@ const getDomainFromUrl = (url) => {
             className="form-select"
             required
           >
-            <option value="">Select an emoji</option>
-            <option value="😊">😊 Happy</option>
-            <option value="😢">😢 Sad</option>
-            <option value="😡">😡 Angry</option>
-            <option value="😍">😍 Love</option>
-            <option value="🤔">🤔 Thinking</option>
-            <option value="😂">😂 Funny</option>
-            <option value="😎">😎 Cool</option>
-            <option value="🙏">🙏 Grateful</option>
-            <option value="💪">💪 Strong</option>
-            <option value="🎉">🎉 Celebration</option>
+         
+    <option value="">Select an emoji</option>
+    <option value="😊">😊 Happy</option>
+    <option value="😢">😢 Sad</option>
+    <option value="😡">😡 Angry</option>
+    <option value="😍">😍 Love</option>
+    <option value="🤔">🤔 Thinking</option>
+    <option value="😂">😂 Funny</option>
+    <option value="😎">😎 Cool</option>
+    <option value="🙏">🙏 Grateful</option>
+    <option value="💪">💪 Strong</option>
+    <option value="🎉">🎉 Celebration</option>
+    <option value="😃">😃 Excited</option>
+<option value="😁">😁 Grinning</option>
+<option value="😆">😆 Laughing</option>
+<option value="😅">😅 Nervous</option>
+<option value="🥰">🥰 Adoring</option>
+<option value="😘">😘 Kiss</option>
+<option value="😭">😭 Crying</option>
+<option value="😱">😱 Shocked</option>
+<option value="😴">😴 Sleepy</option>
+<option value="🤯">🤯 Mind Blown</option>
+Actions & Gestures
+<option value="👍">👍 Thumbs Up</option>
+<option value="👎">👎 Thumbs Down</option>
+<option value="✌️">✌️ Peace</option>
+<option value="🤗">🤗 Hug</option>
+<option value="🙌">🙌 Celebration</option>
+<option value="🤞">🤞 Luck</option>
+<option value="👏">👏 Clapping</option>
+<option value="🙄">🙄 Eye Roll</option>
+<option value="🤷">🤷 Shrug</option>
+Objects & Symbols
+<option value="❤️">❤️ Heart</option>
+<option value="🔥">🔥 Fire</option>
+<option value="🌟">🌟 Star</option>
+<option value="🎯">🎯 Target</option>
+<option value="💯">💯 100%</option>
+<option value="✨">✨ Sparkle</option>
+<option value="🎊">🎊 Party</option>
+<option value="🏆">🏆 Winner</option>
+Animals & Nature
+<option value="🐶">🐶 Dog</option>
+<option value="🐱">🐱 Cat</option>
+<option value="🦁">🦁 Lion</option>
+<option value="🐝">🐝 Bee</option>
+<option value="🌹">🌹 Rose</option>
+<option value="🌞">🌞 Sun</option>
+<option value="🇺🇸">🇺🇸 USA</option>
+<option value="🇬🇧">🇬🇧 UK</option>
+<option value="🇨🇦">🇨🇦 Canada</option>
+<option value="🇦🇺">🇦🇺 Australia</option>
+<option value="🇩🇪">🇩🇪 Germany</option>
+<option value="🇫🇷">🇫🇷 France</option>
+<option value="🇮🇹">🇮🇹 Italy</option>
+<option value="🇯🇵">🇯🇵 Japan</option>
+<option value="🇰🇷">🇰🇷 South Korea</option>
+<option value="🇧🇷">🇧🇷 Brazil</option>
+<option value="🇮🇳">🇮🇳 India</option>
+<option value="🇨🇳">🇨🇳 China</option>
+<option value="🇷🇺">🇷🇺 Russia</option>
+<option value="🇿🇦">🇿🇦 South Africa</option>
+<option value="🇲🇽">🇲🇽 Mexico</option>
+Regional & Special Flags
+<option value="🇪🇺">🇪🇺 European Union</option>
+<option value="🏴󠁧󠁢󠁥󠁮󠁧󠁿">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+<option value="🏴󠁧󠁢󠁳󠁣󠁴󠁿">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</option>
+<option value="🏴󠁧󠁢󠁷󠁬󠁳󠁿">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</option>
+<option value="🏳️‍🌈">🏳️‍🌈 Pride</option>
+<option value="🏳️‍⚧️">🏳️‍⚧️ Transgender</option>
+<option value="❤️‍🔥">❤️‍🔥 Heart (Queer Love)</option>
+Sexual Orientation Flags
+<option value="💗">💗 Lesbian (Pink Flag)</option>
+<option value="💙">💙 Gay (Blue Flag)</option>
+<option value="💜">💜 Bisexual</option>
+<option value="🖤">🖤 Asexual</option>
+<option value="🤎">🤎 Pansexual</option>
+Gender Identity Flags
+<option value="⚧️">⚧️ Trans Symbol</option>
+<option value="♾️">♾️ Non-Binary</option>
+<option value="💛">💛 Genderfluid</option>
+<option value="🤍">🤍 Agender</option>
+Inclusive & Intersectional Pride
+<option value="✊🏿">✊🏿 Black LGBTQ+</option>
+<option value="🌍">🌍 Intersex</option>
+<option value="🏴‍☠️">🏴‍☠️ Pirate</option>
+<option value="🏁">🏁 Chequered Flag</option>
+<option value="🚩">🚩 Triangular Flag</option>
+Fun & Symbolic Flags
+<option value="🏳️">🏳️ White Flag</option>
+<option value="🏴">🏴 Black Flag</option>
+<option value="🇺🇳">🇺🇳 United Nations</option>
+<option value="🇦🇶">🇦🇶 Antarctica</option> (Yes, it exists!)
+<option value="🏴󠁵󠁳󠁴󠁸󠁿">🏴󠁵󠁳󠁴󠁸󠁿 Texas</option> (US State flag example)
+
           </select>
         </div>
 
@@ -904,17 +1072,100 @@ const getDomainFromUrl = (url) => {
             onChange={(e) => setEditFormData(prev => ({ ...prev, emoji: e.target.value }))}
             className="form-select"
           >
-            <option value="">Select an emoji</option>
-            <option value="😊">😊 Happy</option>
-            <option value="😢">😢 Sad</option>
-            <option value="😡">😡 Angry</option>
-            <option value="😍">😍 Love</option>
-            <option value="🤔">🤔 Thinking</option>
-            <option value="😂">😂 Funny</option>
-            <option value="😎">😎 Cool</option>
-            <option value="🙏">🙏 Grateful</option>
-            <option value="💪">💪 Strong</option>
-            <option value="🎉">🎉 Celebration</option>
+          
+    <option value="">Select an emoji</option>
+    <option value="😊">😊 Happy</option>
+    <option value="😢">😢 Sad</option>
+    <option value="😡">😡 Angry</option>
+    <option value="😍">😍 Love</option>
+    <option value="🤔">🤔 Thinking</option>
+    <option value="😂">😂 Funny</option>
+    <option value="😎">😎 Cool</option>
+    <option value="🙏">🙏 Grateful</option>
+    <option value="💪">💪 Strong</option>
+    <option value="🎉">🎉 Celebration</option>
+    <option value="😃">😃 Excited</option>
+<option value="😁">😁 Grinning</option>
+<option value="😆">😆 Laughing</option>
+<option value="😅">😅 Nervous</option>
+<option value="🥰">🥰 Adoring</option>
+<option value="😘">😘 Kiss</option>
+<option value="😭">😭 Crying</option>
+<option value="😱">😱 Shocked</option>
+<option value="😴">😴 Sleepy</option>
+<option value="🤯">🤯 Mind Blown</option>
+Actions & Gestures
+<option value="👍">👍 Thumbs Up</option>
+<option value="👎">👎 Thumbs Down</option>
+<option value="✌️">✌️ Peace</option>
+<option value="🤗">🤗 Hug</option>
+<option value="🙌">🙌 Celebration</option>
+<option value="🤞">🤞 Luck</option>
+<option value="👏">👏 Clapping</option>
+<option value="🙄">🙄 Eye Roll</option>
+<option value="🤷">🤷 Shrug</option>
+Objects & Symbols
+<option value="❤️">❤️ Heart</option>
+<option value="🔥">🔥 Fire</option>
+<option value="🌟">🌟 Star</option>
+<option value="🎯">🎯 Target</option>
+<option value="💯">💯 100%</option>
+<option value="✨">✨ Sparkle</option>
+<option value="🎊">🎊 Party</option>
+<option value="🏆">🏆 Winner</option>
+Animals & Nature
+<option value="🐶">🐶 Dog</option>
+<option value="🐱">🐱 Cat</option>
+<option value="🦁">🦁 Lion</option>
+<option value="🐝">🐝 Bee</option>
+<option value="🌹">🌹 Rose</option>
+<option value="🌞">🌞 Sun</option>
+<option value="🇺🇸">🇺🇸 USA</option>
+<option value="🇬🇧">🇬🇧 UK</option>
+<option value="🇨🇦">🇨🇦 Canada</option>
+<option value="🇦🇺">🇦🇺 Australia</option>
+<option value="🇩🇪">🇩🇪 Germany</option>
+<option value="🇫🇷">🇫🇷 France</option>
+<option value="🇮🇹">🇮🇹 Italy</option>
+<option value="🇯🇵">🇯🇵 Japan</option>
+<option value="🇰🇷">🇰🇷 South Korea</option>
+<option value="🇧🇷">🇧🇷 Brazil</option>
+<option value="🇮🇳">🇮🇳 India</option>
+<option value="🇨🇳">🇨🇳 China</option>
+<option value="🇷🇺">🇷🇺 Russia</option>
+<option value="🇿🇦">🇿🇦 South Africa</option>
+<option value="🇲🇽">🇲🇽 Mexico</option>
+Regional & Special Flags
+<option value="🇪🇺">🇪🇺 European Union</option>
+<option value="🏴󠁧󠁢󠁥󠁮󠁧󠁿">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+<option value="🏴󠁧󠁢󠁳󠁣󠁴󠁿">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</option>
+<option value="🏴󠁧󠁢󠁷󠁬󠁳󠁿">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</option>
+<option value="🏳️‍🌈">🏳️‍🌈 Pride</option>
+<option value="🏳️‍⚧️">🏳️‍⚧️ Transgender</option>
+<option value="❤️‍🔥">❤️‍🔥 Heart (Queer Love)</option>
+Sexual Orientation Flags
+<option value="💗">💗 Lesbian (Pink Flag)</option>
+<option value="💙">💙 Gay (Blue Flag)</option>
+<option value="💜">💜 Bisexual</option>
+<option value="🖤">🖤 Asexual</option>
+<option value="🤎">🤎 Pansexual</option>
+Gender Identity Flags
+<option value="⚧️">⚧️ Trans Symbol</option>
+<option value="♾️">♾️ Non-Binary</option>
+<option value="💛">💛 Genderfluid</option>
+<option value="🤍">🤍 Agender</option>
+Inclusive & Intersectional Pride
+<option value="✊🏿">✊🏿 Black LGBTQ+</option>
+<option value="🌍">🌍 Intersex</option>
+<option value="🏴‍☠️">🏴‍☠️ Pirate</option>
+<option value="🏁">🏁 Chequered Flag</option>
+<option value="🚩">🚩 Triangular Flag</option>
+Fun & Symbolic Flags
+<option value="🏳️">🏳️ White Flag</option>
+<option value="🏴">🏴 Black Flag</option>
+<option value="🇺🇳">🇺🇳 United Nations</option>
+<option value="🇦🇶">🇦🇶 Antarctica</option> (Yes, it exists!)
+<option value="🏴󠁵󠁳󠁴󠁸󠁿">🏴󠁵󠁳󠁴󠁸󠁿 Texas</option> (US State flag example)
           </select>
         </div>
 

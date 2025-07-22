@@ -1811,7 +1811,6 @@ background-color: #1e293bf2;
   gap: 8px;
   padding: 16px 0;
   border-bottom: 1px solid #e1e5e9;
-  margin-bottom: 20px;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -1831,8 +1830,8 @@ background-color: #1e293bf2;}
   padding: 8px 16px;
   border-radius: 20px;
   border: none;
-  background-color: #f1f3f4;
-  color: #5f6368;
+  background-color: #098ed1;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -1845,7 +1844,7 @@ background-color: #1e293bf2;}
 }
 
 .category-pill.active {
-  background-color: #1976d2;
+  background: linear-gradient(135deg, #7133ff, #72264c);
   color: white;
 }
 
