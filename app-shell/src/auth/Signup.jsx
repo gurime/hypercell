@@ -78,6 +78,11 @@ return (
 <div className="particle"></div>
 <div className="particle"></div>
 <div className="particle"></div>
+<div className="particle"></div>
+<div className="particle"></div>
+<div className="particle"></div>
+<div className="particle"></div>
+<div className="particle"></div>
 
 <div className="signup-right-column">
 <div className="signup-card">
@@ -91,6 +96,8 @@ return (
 <div className="form-group">
 <label style={{color:"#374151"}} htmlFor="fname" className="form-label">First Name</label>
 <input
+style={{backgroundColor:"#fff",color:"#374151"}}
+
 type="text"
 id="fname"
 name="fname"
@@ -103,6 +110,8 @@ required />
 <div className="form-group">
 <label style={{color:"#374151"}} htmlFor="username" className="form-label">Last Name</label>
 <input
+style={{backgroundColor:"#fff",color:"#374151"}}
+
 type="text"
 id="lname"
 name="lname"
@@ -115,6 +124,8 @@ required />
 <div className="form-group">
 <label style={{color:"#374151"}} htmlFor="email" className="form-label">Email Address</label>
 <input
+style={{backgroundColor:"#fff",color:"#374151"}}
+
 type="email"
 id="email"
 name="email"
@@ -127,6 +138,8 @@ required />
 <div className="form-group">
 <label style={{color:"#374151"}} htmlFor="password" className="form-label">Password</label>
 <input
+style={{backgroundColor:"#fff",color:"#374151"}}
+
 type="password"
 id="password"
 name="password"

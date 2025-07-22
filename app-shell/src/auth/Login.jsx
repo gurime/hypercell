@@ -77,6 +77,7 @@ return (
 <div className="form-group">
 <label style={{color:"#374151"}} htmlFor="email" className="form-label">Email Address</label>
 <input 
+style={{backgroundColor:"#fff",color:"#374151"}}
 type="email" 
 id="email" 
 name="email" 
@@ -89,6 +90,8 @@ required />
 <div className="form-group">
 <label style={{color:"#374151"}} htmlFor="password" className="form-label">Password</label>
 <input 
+style={{backgroundColor:"#fff",color:"#374151"}}
+
 type="password" 
 id="password" 
 name="password" 

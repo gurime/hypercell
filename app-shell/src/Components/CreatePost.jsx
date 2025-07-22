@@ -689,7 +689,7 @@ const getDomainFromUrl = (url) => {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{padding:"1rem"}}>
               {postType === 'letter' && (
                 <div className="form-group">
                   <label className="form-label">Title</label>
@@ -721,10 +721,11 @@ const getDomainFromUrl = (url) => {
               </div>
 
               <div className="form-group">
-  <label className="form-label">Intention (Optional)</label>
+  <label className="form-label">Hypercell Clarify</label>
   <input
     type="text"
     name="intention"
+    required
     value={formData.intention}
     onChange={handleInputChange}
     className="form-input"

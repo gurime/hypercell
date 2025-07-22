@@ -577,15 +577,15 @@ opacity: 1;
 /* Floating Particles */
 .particle {
 position: absolute;
-width: 4px;
-height: 4px;
+width: 20px;
+height: 20px;
 background: rgba(255, 255, 255, 0.4);
 border-radius: 50%;
 animation: float 6s ease-in-out infinite;
 z-index: 1;
 }
 
-.particle:nth-child(3) { top: 20%; left: 10%; animation-delay: 0s; }
+.particle:nth-child(3) { top: 10%; left: 10%; animation-delay: 0s; }
 .particle:nth-child(4) { top: 60%; left: 20%; animation-delay: 2s; }
 .particle:nth-child(5) { top: 40%; left: 80%; animation-delay: 4s; }
 .particle:nth-child(6) { top: 80%; left: 70%; animation-delay: 1s; }
