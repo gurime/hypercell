@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X, AlertCircle } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
