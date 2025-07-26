@@ -28,15 +28,9 @@ const [editingPost, setEditingPost] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [names, setNames] = useState('');
   const [isSignedIn, setIsSignedIn] = useState();
-  const [showClarifyModal, setShowClarifyModal] = useState(false);
-const [currentClarifyPost, setCurrentClarifyPost] = useState(null);
 const [editFormData, setEditFormData] = useState({
   title: '',
   content: '',
-  intention: '',
-  emoji: ''
-});
-const [clarifyData, setClarifyData] = useState({
   intention: '',
   emoji: ''
 });
@@ -147,38 +141,9 @@ useEffect(() => {
   return () => document.removeEventListener('click', handleClickOutside);
 }, []);
 
-const handleCloseClarifyModal = () => {
-  setShowClarifyModal(false);
-  setCurrentClarifyPost(null);
-  setClarifyData({ intention: '', emoji: '' });
-};
 
-const handleClarifySubmit = async (e) => {
-  e.preventDefault();
-  
-  try {
-    const postRef = doc(db, 'communityPosts', currentClarifyPost);
-    await updateDoc(postRef, {
-      intention: clarifyData.intention,
-      emoji: clarifyData.emoji,
-      updatedAt: new Date()
-    });
-    
-    // Update local state
-    setPostsList(prev => prev.map(post => 
-      post.id === currentClarifyPost 
-        ? { ...post, intention: clarifyData.intention, emoji: clarifyData.emoji }
-        : post
-    ));
-    
-    handleCloseClarifyModal();
-    showToast('Clarification added successfully!');
-    
-  } catch (error) {
-    console.error('Error adding clarification: ', error);
-    showToast('Error adding clarification. Please try again.', 'error');
-  }
-};
+
+
 
   const categories = [
     { id: 'politics', name: 'Politics' },
@@ -527,6 +492,8 @@ const getDomainFromUrl = (url) => {
 
   return (
     <>
+            {/* jumbotron starts here */}
+
           <div className='jumbotron-container'>
         <div 
           className='datawallpaper'
@@ -540,6 +507,10 @@ const getDomainFromUrl = (url) => {
           </div>
         </div>
         </div>
+        {/* jumbotron stops here */}
+
+              {/* Category Navigation */}
+
               <div className="category-nav">
         {categories.map(category => (
           <button
@@ -608,6 +579,8 @@ const getDomainFromUrl = (url) => {
 </div>
 
             </div>
+                  {/* Posts Feed */}
+
 
             {/* Post Content */}
 <div className="post-content">
@@ -655,6 +628,7 @@ const getDomainFromUrl = (url) => {
   </div>
 
 </div>
+            {/* Post Content */}
 
 
             {/* Interaction Bar */}
@@ -690,208 +664,197 @@ const getDomainFromUrl = (url) => {
   </div>
 
 </div>
+{/* Interaction Bar */}
+</div>
+))}
+</div>
 
-      </div>
-        ))}
-      </div>
-{/* 
-      <div className="load-more-container">
-        <button className="load-more-btn">
-          Load More Posts
-        </button>
-      </div> */}
-
-      {/* Floating Action Button */}
-      <button onClick={handleCreateNote} className="fab">
-        <Pencil size={24} />
-      </button>
+{/* Floating Action Button */}
+<button onClick={handleCreateNote} className="fab">
+<Pencil size={24} />
+</button>
       
-      {/* Modal */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2 className="modal-title">Create New Post</h2>
-              <button onClick={handleCloseModal} className="modal-close">
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div className="post-type-toggle">
-              <button 
-                type="button"
-                className={`toggle-btn ${postType === 'note' ? 'active' : ''}`}
-                onClick={() => setPostType('note')}
-              >
-                Note
-              </button>
-              <button 
-                type="button"
-                className={`toggle-btn ${postType === 'letter' ? 'active' : ''}`}
-                onClick={() => setPostType('letter')}
-              >
-                Letter
-              </button>
-            </div>
-            
-            <form onSubmit={handleSubmit} style={{padding:"1rem"}}>
-              {postType === 'letter' && (
-                <div className="form-group">
-                  <label className="form-label">Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="Enter post title"
-                    required
-                  />
-                </div>
-              )}
+{/* Modal */}
+{showModal && (
+<div className="modal-overlay">
+<div className="modal-content">
+<div className="modal-header">
+<h2 className="modal-title">Create New Post</h2>
 
-              <div className="form-group">
-                <label className="form-label">Category</label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="form-select"
-                  required
-                >
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
+<button onClick={handleCloseModal} className="modal-close">
+<X size={24} />
+</button>
+</div>
+            
+<div className="post-type-toggle">
+<button 
+type="button"
+className={`toggle-btn ${postType === 'note' ? 'active' : ''}`}
+onClick={() => setPostType('note')}>
+Note
+</button>
+<button 
+type="button"
+className={`toggle-btn ${postType === 'letter' ? 'active' : ''}`}
+onClick={() => setPostType('letter')}>
+Letter
+</button>
+</div>
+            
+<form onSubmit={handleSubmit} style={{padding:"1rem"}}>
+{postType === 'letter' && (
+<div className="form-group">
+<label className="form-label">Title</label>
+<input
+type="text"
+name="title"
+value={formData.title}
+onChange={handleInputChange}
+className="form-input"
+placeholder="Enter post title"
+required/>
+</div>
+)}
+
+<div className="form-group">
+<label className="form-label">Category</label>
+<select
+name="category"
+value={formData.category}
+onChange={handleInputChange}
+className="form-select"
+required>
+
+{categories.map(cat => (
+<option key={cat.id} value={cat.id}>{cat.name}</option>
+))}
+</select>
+</div>
 
 {/* Replace the separate Hypercell Clarify form groups with this combined section */}
 <div className="form-group clarification-section">
-  <label className="form-label">Hypercell Clarification</label>
+<label className="form-label">Hypercell Clarification</label>
   
-  <div className="clarification-grid">
-    <div className="clarification-field">
-      <label className="sub-label">Intention</label>
-      <input
-        type="text"
-        name="intention"
-        required
-        value={formData.intention}
-        onChange={handleInputChange}
-        className="form-input compact"
-        placeholder="Make your intention clear"
-        maxLength={100}
-      />
-    </div>
+<div className="clarification-grid">
+<div className="clarification-field">
+<label className="sub-label">Intention</label>
+<input
+type="text"
+name="intention"
+required
+value={formData.intention}
+onChange={handleInputChange}
+className="form-input compact"
+placeholder="Make your intention clear"
+maxLength={100}/>
+</div>
     
-    <div className="clarification-field">
-      <label className="sub-label">Emoji</label>
-      <select
-        name="emoji"
-        value={formData.emoji}
-        onChange={handleInputChange}
-        className="form-select compact"
-      >
-        <option value="">Select emoji</option>
-        <option value="😊">😊 Happy</option>
-        <option value="😢">😢 Sad</option>
-        <option value="😡">😡 Angry</option>
-        <option value="😍">😍 Love</option>
-        <option value="🤔">🤔 Thinking</option>
-        <option value="😂">😂 Funny</option>
-        <option value="😎">😎 Cool</option>
-        <option value="🙏">🙏 Grateful</option>
-        <option value="💪">💪 Strong</option>
-        <option value="🎉">🎉 Celebration</option>
-        <option value="😃">😃 Excited</option>
-        <option value="😁">😁 Grinning</option>
-        <option value="😆">😆 Laughing</option>
-        <option value="😅">😅 Nervous</option>
-        <option value="🥰">🥰 Adoring</option>
-        <option value="😘">😘 Kiss</option>
-        <option value="😭">😭 Crying</option>
-        <option value="😱">😱 Shocked</option>
-        <option value="😴">😴 Sleepy</option>
-        <option value="🤯">🤯 Mind Blown</option>
-        <option value="👍">👍 Thumbs Up</option>
-        <option value="👎">👎 Thumbs Down</option>
-        <option value="✌️">✌️ Peace</option>
-        <option value="🤗">🤗 Hug</option>
-        <option value="🙌">🙌 Celebration</option>
-        <option value="🤞">🤞 Luck</option>
-        <option value="👏">👏 Clapping</option>
-        <option value="🙄">🙄 Eye Roll</option>
-        <option value="🤷">🤷 Shrug</option>
-        <option value="❤️">❤️ Heart</option>
-        <option value="🔥">🔥 Fire</option>
-        <option value="🌟">🌟 Star</option>
-        <option value="🎯">🎯 Target</option>
-        <option value="💯">💯 100%</option>
-        <option value="✨">✨ Sparkle</option>
-        <option value="🎊">🎊 Party</option>
-        <option value="🏆">🏆 Winner</option>
-        <option value="🏳️‍🌈">🏳️‍🌈 Pride</option>
-        <option value="🏳️‍⚧️">🏳️‍⚧️ Transgender</option>
-      </select>
-    </div>
+<div className="clarification-field">
+<label className="sub-label">Emoji</label>
+<select
+name="emoji"
+value={formData.emoji}
+onChange={handleInputChange}
+className="form-select compact">
+<option value="">Select emoji</option>
+<option value="😊">😊 Happy</option>
+<option value="😢">😢 Sad</option>
+<option value="😡">😡 Angry</option>
+<option value="😍">😍 Love</option>
+<option value="🤔">🤔 Thinking</option>
+<option value="😂">😂 Funny</option>
+<option value="😎">😎 Cool</option>
+<option value="🙏">🙏 Grateful</option>
+<option value="💪">💪 Strong</option>
+<option value="🎉">🎉 Celebration</option>
+<option value="😃">😃 Excited</option>
+<option value="😁">😁 Grinning</option>
+<option value="😆">😆 Laughing</option>
+<option value="😅">😅 Nervous</option>
+<option value="🥰">🥰 Adoring</option>
+<option value="😘">😘 Kiss</option>
+<option value="😭">😭 Crying</option>
+<option value="😱">😱 Shocked</option>
+<option value="😴">😴 Sleepy</option>
+<option value="🤯">🤯 Mind Blown</option>
+<option value="👍">👍 Thumbs Up</option>
+<option value="👎">👎 Thumbs Down</option>
+<option value="✌️">✌️ Peace</option>
+<option value="🤗">🤗 Hug</option>
+<option value="🙌">🙌 Celebration</option>
+<option value="🤞">🤞 Luck</option>
+<option value="👏">👏 Clapping</option>
+<option value="🙄">🙄 Eye Roll</option>
+<option value="🤷">🤷 Shrug</option>
+<option value="❤️">❤️ Heart</option>
+<option value="🔥">🔥 Fire</option>
+<option value="🌟">🌟 Star</option>
+<option value="🎯">🎯 Target</option>
+<option value="💯">💯 100%</option>
+<option value="✨">✨ Sparkle</option>
+<option value="🎊">🎊 Party</option>
+<option value="🏆">🏆 Winner</option>
+<option value="🏳️‍🌈">🏳️‍🌈 Pride</option>
+<option value="🏳️‍⚧️">🏳️‍⚧️ Transgender</option>
+</select>
+</div>
     
-    <div className="clarification-field">
-      <label className="sub-label">Sentiment Tone</label>
-      <select
-        name="sentimentTone"
-        value={formData.sentimentTone}
-        onChange={handleInputChange}
-        className="form-select compact"
-        required
-      >
-        <option value="">Select tone</option>
-        <option value="positively-positive">Positively Positive 😊</option>
-        <option value="positively-negative">Positively Negative 😔</option>
-        <option value="negatively-negative">Negatively Negative 😔</option>
-        <option value="negatively-positive">Negatively Positive 😃</option>
-        <option value="constructively-critical">Constructively Critical 🤔</option>
-        <option value="neutrally-informative">Neutrally Informative 📝</option>
-        <option value="supportively-encouraging">Supportively Encouraging 💪</option>
-        <option value="questioningly-curious">Questioningly Curious ❓</option>
-        <option value="humorously-light">Humorously Light 😄</option>
-        <option value="seriously-concerned">Seriously Concerned ⚠️</option>
-      </select>
-    </div>
-  </div>
+<div className="clarification-field">
+<label className="sub-label">Sentiment Tone</label>
+<select
+name="sentimentTone"
+value={formData.sentimentTone}
+onChange={handleInputChange}
+className="form-select compact"
+required>
+<option value="">Select tone</option>
+<option value="positively-positive">Positively Positive 😊</option>
+<option value="positively-negative">Positively Negative 😔</option>
+<option value="negatively-negative">Negatively Negative 😔</option>
+<option value="negatively-positive">Negatively Positive 😃</option>
+<option value="constructively-critical">Constructively Critical 🤔</option>
+<option value="neutrally-informative">Neutrally Informative 📝</option>
+<option value="supportively-encouraging">Supportively Encouraging 💪</option>
+<option value="questioningly-curious">Questioningly Curious ❓</option>
+<option value="humorously-light">Humorously Light 😄</option>
+<option value="seriously-concerned">Seriously Concerned ⚠️</option>
+</select>
+</div>
+</div>
 </div>
 
 
 
 
-              <div className="form-group">
-                <label className="form-label">
-                  {postType === 'note' ? 'Note' : 'Letter'}
-                </label>
-                <textarea
-                  name="content"
-                  value={formData.content}
-                  onChange={handleInputChange}
-                  placeholder={postType === 'note' ? "Write a Note!" : "Write your detailed Letter here."}
-                  maxLength={getCharacterLimit()}
-                  className="form-textarea"
-                  required
-                />
-                <div className={`character-count ${isOverLimit() ? 'over-limit' : ''}`}>
-                  {getCharacterCount()}/{getCharacterLimit()} characters
-                </div>
-              </div>
+<div className="form-group">
+<label className="form-label">
+{postType === 'note' ? 'Note' : 'Letter'}
+</label>
+<textarea
+name="content"
+value={formData.content}
+onChange={handleInputChange}
+placeholder={postType === 'note' ? "Write a Note!" : "Write your detailed Letter here."}
+maxLength={getCharacterLimit()}
+className="form-textarea"
+required/>
+
+<div className={`character-count ${isOverLimit() ? 'over-limit' : ''}`}>
+{getCharacterCount()}/{getCharacterLimit()} characters
+</div>
+</div>
+
 {(postType === 'letter' || postType === 'note') && (
-  <div className="form-group">
-    <label className="form-label">Link (Optional)</label>
-    <input
-      type="url"
-      name="url"
-      value={formData.url}
-      onChange={handleInputChange}
-      className="form-input"
-      placeholder="https://example.com"
-    />
-  </div>
+<div className="form-group">
+<label className="form-label">Link (Optional)</label>
+<input
+type="url"
+name="url"
+value={formData.url}
+onChange={handleInputChange}
+className="form-input"
+placeholder="https://example.com"/>
+</div>
 )}
 
 
@@ -908,131 +871,9 @@ const getDomainFromUrl = (url) => {
         </div>
       )}
 
-      {showClarifyModal && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <div className="modal-header">
-        <h2 className="modal-title">Edit Clarification</h2>
-        <button onClick={handleCloseClarifyModal} className="modal-close">
-          <X size={24} />
-        </button>
-      </div>
-      
-      <form onSubmit={handleClarifySubmit}>
-        <div className="form-group">
-          <label className="form-label">Intention</label>
-          <input
-            type="text"
-            value={clarifyData.intention}
-            onChange={(e) => setClarifyData(prev => ({ ...prev, intention: e.target.value }))}
-            className="form-input"
-            placeholder="e.g., Edit this to clarify your intention"
-            maxLength={100}
-            required
-          />
-        </div>
 
-        <div className="form-group">
-          <label className="form-label">Emoji</label>
-          <select
-            value={clarifyData.emoji}
-            onChange={(e) => setClarifyData(prev => ({ ...prev, emoji: e.target.value }))}
-            className="form-select"
-            required
-          >
-         
- <option value="">Select emoji</option>
-        <option value="😊">😊 Happy</option>
-        <option value="😢">😢 Sad</option>
-        <option value="😡">😡 Angry</option>
-        <option value="😍">😍 Love</option>
-        <option value="🤔">🤔 Thinking</option>
-        <option value="😂">😂 Funny</option>
-        <option value="😎">😎 Cool</option>
-        <option value="🙏">🙏 Grateful</option>
-        <option value="💪">💪 Strong</option>
-        <option value="🎉">🎉 Celebration</option>
-        <option value="😃">😃 Excited</option>
-        <option value="😁">😁 Grinning</option>
-        <option value="😆">😆 Laughing</option>
-        <option value="😅">😅 Nervous</option>
-        <option value="🥰">🥰 Adoring</option>
-        <option value="😘">😘 Kiss</option>
-        <option value="😭">😭 Crying</option>
-        <option value="😱">😱 Shocked</option>
-        <option value="😴">😴 Sleepy</option>
-        <option value="🤯">🤯 Mind Blown</option>
-        <option value="👍">👍 Thumbs Up</option>
-        <option value="👎">👎 Thumbs Down</option>
-        <option value="✌️">✌️ Peace</option>
-        <option value="🤗">🤗 Hug</option>
-        <option value="🙌">🙌 Celebration</option>
-        <option value="🤞">🤞 Luck</option>
-        <option value="👏">👏 Clapping</option>
-        <option value="🙄">🙄 Eye Roll</option>
-        <option value="🤷">🤷 Shrug</option>
-        <option value="❤️">❤️ Heart</option>
-        <option value="🔥">🔥 Fire</option>
-        <option value="🌟">🌟 Star</option>
-        <option value="🎯">🎯 Target</option>
-        <option value="💯">💯 100%</option>
-        <option value="✨">✨ Sparkle</option>
-        <option value="🎊">🎊 Party</option>
-        <option value="🏆">🏆 Winner</option>
-        <option value="🏳️‍🌈">🏳️‍🌈 Pride</option>
-        <option value="🏳️‍⚧️">🏳️‍⚧️ Transgender</option>
-      </select>
 
-       
-        </div>
 
-        <div className="form-group">
-  <label className="form-label">Hypercell Clarify - Intention</label>
-  <input
-    type="text"
-    name="intention"
-    required
-    value={clarifyData.intention}
-    onChange={handleInputChange}
-    className="form-input"
-    placeholder="e.g., This note is meant to be informative"
-    maxLength={100}
-  />
-</div>
-
-<div className="form-group">
-  <label className="form-label">Sentiment Tone</label>
-  <select
-    name="sentimentTone"
-    value={clarifyData.sentimentTone}
-    onChange={handleInputChange}
-    className="form-select"
-    required
-  >
-    <option value="">Select tone</option>
-    <option value="positively-positive">Positively Positive 😊</option>
-    <option value="positively-negative">Positively Negative 😔</option>
-    <option value="constructively-critical">Constructively Critical 🤔</option>
-    <option value="neutrally-informative">Neutrally Informative 📝</option>
-    <option value="supportively-encouraging">Supportively Encouraging 💪</option>
-    <option value="questioningly-curious">Questioningly Curious ❓</option>
-    <option value="humorously-light">Humorously Light 😄</option>
-    <option value="seriously-concerned">Seriously Concerned ⚠️</option>
-  </select>
-</div>
-
-        <div className="form-actions">
-          <button type="button" onClick={handleCloseClarifyModal} className="btn-secondary">
-            Cancel
-          </button>
-          <button type="submit" className="btn-primary">
-            Add Clarification
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
 
       {editingPost && (
   <div className="modal-overlay">
