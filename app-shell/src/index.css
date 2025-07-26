@@ -490,11 +490,6 @@ margin-bottom: 32px;
 .signup-form {
   width: 100%;
 }
-
-.form-group {
-  margin-bottom: 24px;
-}
-
 .form-label {
 display: block;
 color: #374151;
@@ -1177,10 +1172,173 @@ margin-bottom: 24px;
   display: none;
 }
 
-/* Input Focus Effects */
-.form-group {
-  position: relative;
+/* Clarification Section Styles */
+.clarification-section {
+  border: 1px solid rgba(29, 155, 240, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(29, 155, 240, 0.05);
+  margin-bottom: 20px;
 }
+
+.clarification-section .form-label {
+  color: #1d9bf0;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.clarification-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Responsive grid - shows fields side by side on larger screens */
+@media (min-width: 768px) {
+  .clarification-grid {
+    grid-template-columns: 2fr 1fr 2fr; /* intention, emoji, tone */
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .clarification-grid {
+    grid-template-columns: 2fr 1.2fr 2fr;
+    gap: 24px;
+  }
+}
+
+.clarification-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.clarification-field .sub-label {
+  font-size: 12px;
+  color: #8b949e;
+  margin-bottom: 6px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Compact form inputs for clarification section */
+.form-input.compact,
+.form-select.compact {
+  padding: 12px 14px; /* Reduced from 16px */
+  font-size: 14px; /* Reduced from 16px */
+  border-radius: 8px; /* Slightly smaller radius */
+  min-height: 44px; /* Ensure touch-friendly height */
+}
+
+.form-input.compact:focus,
+.form-select.compact:focus {
+  transform: translateY(-1px); /* Reduced movement on focus */
+}
+
+/* Additional spacing adjustments */
+.clarification-section + .form-group {
+  margin-top: 20px;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 767px) {
+  .clarification-section {
+    padding: 12px;
+  }
+  
+  .clarification-grid {
+    gap: 12px;
+  }
+  
+  .form-input.compact,
+  .form-select.compact {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
+.post-sentiment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(29, 155, 240, 0.1);
+  border: 1px solid rgba(29, 155, 240, 0.2);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.post-sentiment .sentiment-tone {
+  color: #8b949e;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Emoji styling within sentiment */
+.post-sentiment > span:first-child {
+  font-size: 16px;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .post-sentiment {
+    padding: 6px 10px;
+    font-size: 13px;
+    gap: 6px;
+  }
+  
+  .post-sentiment .sentiment-tone {
+    font-size: 11px;
+  }
+}
+
+
+/* Optional: Different styles for different sentiment tones */
+.post-sentiment[data-tone="positively-positive"] {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.post-sentiment[data-tone="positively-negative"] {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.post-sentiment[data-tone="constructively-critical"] {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.post-sentiment[data-tone="neutrally-informative"] {
+  background: rgba(107, 114, 128, 0.1);
+  border-color: rgba(107, 114, 128, 0.2);
+}
+
+.post-sentiment[data-tone="supportively-encouraging"] {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.post-sentiment[data-tone="questioningly-curious"] {
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+.post-sentiment[data-tone="humorously-light"] {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+.post-sentiment[data-tone="seriously-concerned"] {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Input Focus Effects */
 
 .form-group::after {
   content: '';
@@ -1806,17 +1964,14 @@ background-color: #1e293bf2;
 
 /* Category Navigation */
 .category-nav {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+align-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 8px;
-  padding: 16px 0;
-  border-bottom: 1px solid #e1e5e9;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  padding: 8px;
+  overflow-x: hidden;
   justify-content: center;
   position: sticky;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 
   top: 80px;
  z-index: 10; /* Make sure it's above other content */
@@ -1824,6 +1979,14 @@ background-color: #1e293bf2;}
 
 .category-nav::-webkit-scrollbar {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .category-nav {
+   top: 9rem;
+
+
+  }
 }
 
 .category-pill {
@@ -1841,6 +2004,7 @@ background-color: #1e293bf2;}
 
 .category-pill:hover {
   background-color: #e8eaed;
+  color: #000;
 }
 
 .category-pill.active {
