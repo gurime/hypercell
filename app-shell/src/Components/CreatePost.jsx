@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X, AlertCircle } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X, AlertCircle, LinkIcon, Twitter, Facebook, Linkedin, Mail
+ } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc } from 'firebase/firestore';
@@ -17,6 +18,8 @@ export default function ModernFeed() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [activeDropdown, setActiveDropdown] = useState(null);
 const [editingPost, setEditingPost] = useState(null);
+const [shareDropdown, setShareDropdown] = useState(null);
+
 
 
   const [postsList, setPostsList] = useState([]);
@@ -375,6 +378,145 @@ const handleCloseModal = () => {
       [name]: value
     }));
   };
+// Updated share functions with Firebase integration
+
+const handleShareDropdown = (postId) => {
+  setShareDropdown(shareDropdown === postId ? null : postId);
+};
+
+// Fixed shareToSocial function
+const shareToSocial = async (platform, post) => {
+  try {
+    // Update share count in Firebase
+    const postRef = doc(db, 'communityPosts', post.id);
+    await updateDoc(postRef, { 
+      shares: increment(1),
+      [`${platform}Shares`]: increment(1) // Track shares per platform
+    });
+
+    // Update local state optimistically
+    setPostsList(prevPosts =>
+      prevPosts.map(p =>
+        p.id === post.id
+          ? { ...p, shares: (p.shares || 0) + 1 }
+          : p
+      )
+    );
+
+    // Construct the post URL - adjust this based on your routing structure
+    const postUrl = `${window.location.origin}/community/${post.id}`;
+    const text = post.title 
+      ? `Check out this post: ${post.title}` 
+      : `Check out this post: ${post.content.substring(0, 50)}${post.content.length > 50 ? '...' : ''}`;
+    
+    const urls = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(postUrl)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`,
+      reddit: `https://reddit.com/submit?title=${encodeURIComponent(text)}&url=${encodeURIComponent(postUrl)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(text + ' ' + postUrl)}`
+    };
+    
+    window.open(urls[platform], '_blank', 'width=600,height=400');
+    setShareDropdown(null);
+    showToast(`Shared to ${platform.charAt(0).toUpperCase() + platform.slice(1)}!`);
+
+  } catch (error) {
+    console.error('Error updating share count:', error);
+    showToast('Error sharing post. Please try again.', 'error');
+  }
+};
+
+// Fixed shareViaEmail function
+const shareViaEmail = async (post) => {
+  try {
+    // Update share count in Firebase
+    const postRef = doc(db, 'communityPosts', post.id);
+    await updateDoc(postRef, { 
+      shares: increment(1),
+      emailShares: increment(1)
+    });
+
+    // Update local state optimistically
+    setPostsList(prevPosts =>
+      prevPosts.map(p =>
+        p.id === post.id
+          ? { ...p, shares: (p.shares || 0) + 1 }
+          : p
+      )
+    );
+
+    const postUrl = `${window.location.origin}/community/${post.id}`;
+    const subject = `Check out this post: ${post.title || 'Interesting post'}`;
+    const body = `I thought you might find this interesting:\n\n"${post.content.substring(0, 200)}${post.content.length > 200 ? '...' : ''}"\n\nRead more: ${postUrl}`;
+    
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setShareDropdown(null);
+    showToast('Email client opened!');
+
+  } catch (error) {
+    console.error('Error updating share count:', error);
+    showToast('Error sharing via email. Please try again.', 'error');
+  }
+};
+
+// New handleCopyLink function (this was missing in your original code)
+const handleCopyLink = async (postId) => {
+  try {
+    // Update share count in Firebase
+    const postRef = doc(db, 'communityPosts', postId);
+    await updateDoc(postRef, { 
+      shares: increment(1),
+      linkCopies: increment(1)
+    });
+
+    // Update local state optimistically
+    setPostsList(prevPosts =>
+      prevPosts.map(post =>
+        post.id === postId
+          ? { ...post, shares: (post.shares || 0) + 1 }
+          : post
+      )
+    );
+
+    const postUrl = `${window.location.origin}/community/${postId}`;
+    await navigator.clipboard.writeText(postUrl);
+    setShareDropdown(null);
+    showToast('Link copied to clipboard!');
+
+  } catch (error) {
+    console.error('Error copying link or updating share count:', error);
+    
+    // Fallback for browsers that don't support clipboard API
+    const postUrl = `${window.location.origin}/community/${postId}`;
+    const textArea = document.createElement('textarea');
+    textArea.value = postUrl;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+      document.execCommand('copy');
+      showToast('Link copied to clipboard!');
+    } catch (fallbackError) {
+      showToast('Could not copy link. Please copy manually.', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+    setShareDropdown(null);
+  }
+};
+useEffect(() => {
+  const handleClickOutside = () => {
+    setShareDropdown(null);
+  };
+  
+  if (shareDropdown) {
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }
+}, [shareDropdown]);
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -656,9 +798,64 @@ const getDomainFromUrl = (url) => {
     <span>{post.bookmarks || 0}</span>
   </button>
     
-    <button className="interaction-btn">
-      <Share2 size={16} />
-    </button>
+<div className="share-container">
+  <button 
+    onClick={(e) => {
+      e.stopPropagation();
+      handleShareDropdown(post.id);
+    }}
+    className="interaction-btn"
+  >
+    <Share2 size={16} />
+    <span>{post.shares || 0}</span>
+  </button>
+  
+  {shareDropdown === post.id && (
+    <div className="share-dropdown">
+      <button 
+        className="share-option"
+        onClick={() => handleCopyLink(post.id)}
+      >
+        <LinkIcon size={16} />
+        Copy Link
+      </button>
+      
+      <button 
+        className="share-option"
+        onClick={() => shareViaEmail(post)}
+      >
+        <Mail size={16} />
+        Email
+      </button>
+      
+      <button 
+        className="share-option"
+        onClick={() => shareToSocial('twitter', post)}
+      >
+        <Twitter size={16} />
+        Twitter
+      </button>
+      
+      <button 
+        className="share-option"
+        onClick={() => shareToSocial('facebook', post)}
+      >
+        <Facebook size={16} />
+        Facebook
+      </button>
+      
+  
+      <button 
+        className="share-option"
+        onClick={() => shareToSocial('linkedin', post)}
+      >
+        <Linkedin size={16} />
+        LinkedIn
+      </button>
+    </div>
+  )}
+</div>
+
 
 
   </div>
