@@ -1,7 +1,6 @@
 body, html {
 padding: 0;
 margin: 0;
-overflow-x: hidden;
 font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 height: 100%;
 letter-spacing: 1px;
@@ -2350,27 +2349,27 @@ line-height: 1.75rem;
   transform: scale(1.1);
 }
 
-.fabTop{
+.fabTop {
   position: fixed;
-  bottom: 90px;
-  right: 24px;
+  bottom: 24px;
+  left: 24px;
   width: 56px;
   height: 56px;
-  border-radius: 50%;
-  background-color: #1976d2;
-  border: none;
+  background: #007bff;
   color: white;
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  transition: all 0.3s ease;
 }
 
 .fabTop:hover {
-  background-color: #1565c0;
+  background: #0056b3;
   transform: scale(1.1);
 }
 

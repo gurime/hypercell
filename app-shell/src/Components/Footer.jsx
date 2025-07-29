@@ -9,11 +9,7 @@ export default function Footer() {
 const navigate = useNavigate();
 
 
-// Check if current route is /contact
-const scrollToTopNav = () => {
-const nav = document.getElementById('top-navbar');
-if (nav) nav.scrollIntoView({ behavior: 'smooth' });
-};
+
 
 const activeStyle = ({ isActive }) => ({
 backgroundColor: isActive ? 'blue' : '',
@@ -83,7 +79,7 @@ textAlign:'center'
 
 <div className="footer-logo-box">
 
-<img title='To Top'  onClick={scrollToTopNav}  src={navlogo} alt="..."     />
+<img  src={navlogo} alt="..."     />
 
 </div>
 </footer>

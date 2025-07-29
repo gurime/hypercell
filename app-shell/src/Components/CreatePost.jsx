@@ -4,7 +4,7 @@ import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, P
  } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
-import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
 export default function CreatePost() {
@@ -365,18 +365,18 @@ showToast('Error sharing via email. Please try again.', 'error');
 };
 
 const handleSubmit = async (e) => {
-e.preventDefault();    
-try {
-const communityPost = {
+  e.preventDefault();    
+  try {
+    const communityPost = {
 title: formData.title,
 content: formData.content,
 url: formData.url,
 category: formData.category,
-timestamp: new Date(),
-createdAt: new Date(),
-updatedAt: new Date(),
+timestamp: serverTimestamp(), // Use server timestamp
+createdAt: serverTimestamp(), // Use server timestamp
+updatedAt: serverTimestamp(), // Use server timestamp
 shares: 0,
-bookmarks:0,
+bookmarks: 0,
 emailShares: 0,
 linkCopies: 0,
 status: 'published',
@@ -392,11 +392,10 @@ emoji: formData.emoji,
 sentimentTone: formData.sentimentTone 
 };
 await addDoc(collection(db, 'communityPosts'), communityPost);
-const querySnapshot = await getDocs(collection(db, 'communityPosts'));
-const updatedPostsList = querySnapshot.docs.map(doc => ({ 
-id: doc.id, 
-...doc.data() 
-}));
+// Re-fetch posts to get the updated list with proper ordering
+const q = query(collection(db, 'communityPosts'),orderBy('createdAt', 'desc'));
+const querySnapshot = await getDocs(q);
+const updatedPostsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 setPostsList(updatedPostsList);
 setFormData({
 title: '',
@@ -414,18 +413,19 @@ showToast('Error creating post. Please try again.', 'error');
 }
 };
 
-const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
+
+const scrollToTopNav = () => {
+window.scrollTo({
+top: 0,
+behavior: 'smooth'
+});
 };
 //handle functions end here
 
 
 
 
-//useEffects stop here
+//useEffects starts here
 useEffect(() => {
 const handleClickOutside = () => {
 setActiveDropdown(null);
@@ -480,7 +480,11 @@ useEffect(() => {
 const fetchPosts = async () => {
 try {
 setLoading(true);
-const querySnapshot = await getDocs(collection(db, 'communityPosts'));
+const q = query(
+collection(db, 'communityPosts'),
+orderBy('createdAt', 'desc')
+);
+const querySnapshot = await getDocs(q);
 const postsList = querySnapshot.docs.map(doc => ({ 
 id: doc.id,
 ...doc.data() 
@@ -509,14 +513,10 @@ return () => document.removeEventListener('click', handleClickOutside);
 
 useEffect(() => {
 const handleScroll = () => {
-// Show button when user scrolls down 100px (adjust as needed)
-if (window.scrollY > 100) {
-setShowScrollTop(true);
-} else {
-setShowScrollTop(false);
-}
+setShowScrollTop(window.scrollY > 100);
 };
 window.addEventListener('scroll', handleScroll);
+handleScroll();
 return () => window.removeEventListener('scroll', handleScroll);
 }, []);
 //useEffects stop here
@@ -646,13 +646,14 @@ style={{
 backgroundImage: `url(${categoryImages[activeCategory]})`
 }}>
 <div className="category-overlay">
-<p className="category-description">
 <h1 className="category-title">
 {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
 </h1>
+<p className="category-description">
 {categoryDescriptions[activeCategory]}
 </p>
 </div>
+
 </div>
 </div>
 {/* jumbotron stops here */}
@@ -849,11 +850,13 @@ Email
 <Pencil size={24} />
 </button>
 
+{/* Scroll to Top Button */}
 {showScrollTop && (
-<button onClick={scrollToTop} className="fabTop">
+<button onClick={scrollToTopNav} className="fabTop">
 <ArrowBigUp size={24} />
 </button>
 )}
+
 {/* Floating Action Button */}
 
       

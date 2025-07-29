@@ -14,6 +14,13 @@ const navigate = useNavigate();
 const location = useLocation();
 
 useEffect(() => {
+// Focus on mount
+if (navRef.current) {
+navRef.current.focus();
+}
+}, []);
+
+useEffect(() => {
 let isMounted = true;
 
 // In your Navbar component
@@ -75,7 +82,7 @@ return name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 };
 
   return (
-    <nav ref={navRef} className="navbar" id="top-navbar">
+    <nav ref={navRef} tabIndex={-1} className="navbar" id="top-navbar">
       <div className="logo">
         <Link to="/">
           <img src={navlogo} alt="Hypercell Social Logo"/>
