@@ -1,27 +1,35 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X, AlertCircle, LinkIcon, Twitter, Facebook, Linkedin, Mail
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X,LinkIcon, Mail, CreativeCommons, ArrowBigUp
  } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
 import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
-export default function ModernFeed() {
+export default function CreatePost() {
 const location = useLocation();
 const navigate = useNavigate();
 let { id } = useParams();
 
 const showCategory = (categoryId) => {
+// Fade out jumbotron
+setIsJumbotronVisible(false);
+// After fade out completes, change category and fade in
+setTimeout(() => {
 setActiveCategory(categoryId);
 const newSearchParams = new URLSearchParams(location.search);
 newSearchParams.set('category', categoryId);
 navigate(`${location.pathname}?${newSearchParams.toString()}`, { replace: true });
+setIsJumbotronVisible(true);
+}, 300); // Match this with your CSS transition duration
 };
 const searchParams = new URLSearchParams(location.search);
 const initialCategory = searchParams.get('category') || 'politics';
+const [isJumbotronVisible, setIsJumbotronVisible] = useState(true);
 const [activeCategory, setActiveCategory] = useState(initialCategory);
 const [activeDropdown, setActiveDropdown] = useState(null);
+const [showScrollTop, setShowScrollTop] = useState(false);
 const [editingPost, setEditingPost] = useState(null);
 const [shareDropdown, setShareDropdown] = useState(null);
 const [postsList, setPostsList] = useState([]);
@@ -47,7 +55,6 @@ title: '',
 category: initialCategory,
 content: '',
 url: '',
-tags: [],
 intention: '',
 emoji: '',
 sentimentTone: '' 
@@ -406,6 +413,13 @@ showToast('Note created successfully!' || 'Letter created successfully!', 'succe
 showToast('Error creating post. Please try again.', 'error');
 }
 };
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+};
 //handle functions end here
 
 
@@ -492,57 +506,76 @@ document.addEventListener('click', handleClickOutside);
 return () => document.removeEventListener('click', handleClickOutside);
 }
 }, [shareDropdown]);
+
+useEffect(() => {
+const handleScroll = () => {
+// Show button when user scrolls down 100px (adjust as needed)
+if (window.scrollY > 100) {
+setShowScrollTop(true);
+} else {
+setShowScrollTop(false);
+}
+};
+window.addEventListener('scroll', handleScroll);
+return () => window.removeEventListener('scroll', handleScroll);
+}, []);
 //useEffects stop here
 
-// Categories and their images
 
+
+
+// Categories and their images
 const categories = [
-  { id: 'politics', name: 'Politics' },
-  { id: 'sports', name: 'Sports' },
-  { id: 'music', name: 'Music' },
-  { id: 'fashion', name: 'Fashion' },
-  { id: 'gaming', name: 'Gaming' },
-  { id: 'tech', name: 'Tech' },
-  { id: 'community', name: 'Community' },
-  { id: 'lifestyle', name: 'Lifestyle' },
-  { id: 'healthFitness', name: 'Health & Fitness' },
-  { id: 'education', name: 'Education' },
-  { id: 'entertainment', name: 'Entertainment' }
+{ id: 'politics', name: 'Politics' },
+{ id: 'sports', name: 'Sports' },
+{ id: 'music', name: 'Music' },
+{ id: 'fashion', name: 'Fashion' },
+{ id: 'gaming', name: 'Gaming' },
+{ id: 'tech', name: 'Tech' },
+{ id: 'community', name: 'Community' },
+{ id: 'lifestyle', name: 'Lifestyle' },
+{ id: 'healthFitness', name: 'Health & Fitness' },
+{ id: 'education', name: 'Education' },
+{ id: 'entertainment', name: 'Entertainment' }
 ];
 
 const categoryImages = {
-  politics: '/images/assets/politicsbg.jpg',
-  sports: '/images/assets/sportsbg.jpg',
-  music: '/images/assets/musicbg.jpg',
-  fashion: '/images/assets/fashionbg.jpg',
-  gaming: '/images/assets/gamingbg.jpg',
-  tech: '/images/assets/techbg.jpg',
-  community: '/images/assets/communitybg.jpg',
-  lifestyle: '/images/assets/lifestylebg.jpg',
-  healthFitness: '/images/assets/healthbg.jpg',
-  education: '/images/assets/educationbg.jpg',
-  entertainment: '/images/assets/entertainmentbg.jpg'
+politics: '/images/assets/politicsbg.jpg',
+sports: '/images/assets/sportsbg.jpg',
+music: '/images/assets/musicbg.jpg',
+fashion: '/images/assets/fashionbg.jpg',
+gaming: '/images/assets/gamingbg.jpg',
+tech: '/images/assets/techbg.jpg',
+community: '/images/assets/communitybg.jpg',
+lifestyle: '/images/assets/lifestylebg.jpg',
+healthFitness: '/images/assets/healthbg.jpg',
+education: '/images/assets/educationbg.jpg',
+entertainment: '/images/assets/entertainmentbg.jpg'
 };
 
 const categoryDescriptions = {
-  politics: 'Stay informed with the latest political news and discussions',
-  sports: 'Your ultimate destination for sports news and updates',
-  music: 'Discover new artists, tracks, and music industry news',
-  fashion: 'Latest trends, styles, and fashion industry insights',
-  gaming: 'Gaming news, reviews, and community discussions',
-  tech: 'Technology news, innovations, and digital trends',
-  community: 'Connect with others and share your thoughts on various topics',
-  lifestyle: 'Explore lifestyle tips, trends, and personal stories',
-  healthFitness: 'Workout routines, fitness tips, nutrition guidance, and wellness advice',
-  education: 'Educational resources, discussions, and learning opportunities',
-  entertainment: 'Entertainment news, reviews, and pop culture discussions'
+politics: 'Stay informed with the latest political news and discussions',
+sports: 'Your ultimate destination for sports news and updates',
+music: 'Discover new artists, tracks, and music industry news',
+fashion: 'Latest trends, styles, and fashion industry insights',
+gaming: 'Gaming news, reviews, and community discussions',
+tech: 'Technology news, innovations, and digital trends',
+community: 'Connect with others and share your thoughts on various topics',
+lifestyle: 'Explore lifestyle tips, trends, and personal stories',
+healthFitness: 'Workout routines, fitness tips, nutrition guidance, and wellness advice',
+education: 'Educational resources, discussions, and learning opportunities',
+entertainment: 'Entertainment news, reviews, and pop culture discussions'
 };
 // Categories and their images
 
 
 
+
+
+
+// Helper functions start here
 const getCharacterLimit = () => {
-  return postType === 'note' ? 280 : 10000; // Updated limits
+return postType === 'note' ? 280 : 10000; // Updated limits
 };
 
 // Add a preview character limit constant
@@ -551,65 +584,62 @@ const PREVIEW_LIMIT = 150; // Characters to show in preview
 
 
 const getCharacterCount = () => {
-  return formData.content.length;
+return formData.content.length;
 };
 
 const isOverLimit = () => {
-  return getCharacterCount() > getCharacterLimit();
+return getCharacterCount() > getCharacterLimit();
 };
 
 // Helper function to get preview text
 const getPreviewText = (content, type) => {
-  if (type === 'note') {
-    return content; // Notes always show in full
-  }
+if (type === 'note') {
+return content; // Notes always show in full
+}
   
-  // For letters, always show preview with ... if longer than PREVIEW_LIMIT
-  if (content.length > PREVIEW_LIMIT) {
-    return `${content.slice(0, PREVIEW_LIMIT)}...`;
-  }
-  
-  return content;
+// For letters, always show preview with ... if longer than PREVIEW_LIMIT
+if (content.length > PREVIEW_LIMIT) {
+return `${content.slice(0, PREVIEW_LIMIT)}...`;
+}
+return content;
 };
 
-  const filteredPosts = postsList.filter(post => post.category === activeCategory);
 
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return 'Recently';
+
+const filteredPosts = postsList.filter(post => post.category === activeCategory);
+const formatTimestamp = (timestamp) => {
+if (!timestamp) return 'Recently';
     
-    const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    
-    if (hours < 1) return 'Just now';
-    if (hours < 24) return `${hours}h ago`;
-    if (hours < 48) return '1d ago';
-    return date.toLocaleDateString();
-  };
+const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+const now = new Date();
+const diff = now - date;
+const hours = Math.floor(diff / (1000 * 60 * 60));
 
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
+if (hours < 1) return 'Just now';
+if (hours < 24) return `${hours}h ago`;
+if (hours < 48) return '1d ago';
+return date.toLocaleDateString();
+};
 
-  if (error) {
-    return <div style={{padding: '20px', color: 'red'}}>Error: {error}</div>;
-  }
+const getInitials = (name) => {
+if (!name) return 'U';
+return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+};
 
 const getDomainFromUrl = (url) => {
-  try {
-    const urlObj = new URL(url);
-    return urlObj.hostname.replace('www.', '');
-  } catch (error) {
-    return url;
-  }
+try {
+const urlObj = new URL(url);
+return urlObj.hostname.replace('www.', '');
+} catch (error) {
+return url;
+}
 };
+//helper functions end here
 
-  return (
+return (
 <>
 {/* jumbotron starts here */}
-<div className='jumbotron-container'>
+<div className={`jumbotron-container ${isJumbotronVisible ? 'fade-in' : 'fade-out'}`}>
 <div 
 className='datawallpaper'
 style={{
@@ -617,7 +647,9 @@ backgroundImage: `url(${categoryImages[activeCategory]})`
 }}>
 <div className="category-overlay">
 <p className="category-description">
-<h1 className="category-title">{activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h1>
+<h1 className="category-title">
+{activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
+</h1>
 {categoryDescriptions[activeCategory]}
 </p>
 </div>
@@ -801,38 +833,10 @@ onClick={() => shareViaEmail(post)}
 <Mail size={16} />
 Email
 </button>
-      
-{/* <button 
-className="share-option"
-onClick={() => shareToSocial('twitter', post)}
->
-<Twitter size={16} />
-Twitter
-</button>
-      
-<button 
-className="share-option"
-onClick={() => shareToSocial('facebook', post)}
->
-<Facebook size={16} />
-Facebook
-</button>
-      
-  
-<button 
-className="share-option"
-onClick={() => shareToSocial('linkedin', post)}
->
-<Linkedin size={16} />
-LinkedIn
-</button> */}
 </div>
 )}
 </div>
-
-
-
-  </div>
+</div>
 
 </div>
 {/* Interaction Bar */}
@@ -844,6 +848,14 @@ LinkedIn
 <button onClick={handleCreateNote} className="fab">
 <Pencil size={24} />
 </button>
+
+{showScrollTop && (
+<button onClick={scrollToTop} className="fabTop">
+<ArrowBigUp size={24} />
+</button>
+)}
+{/* Floating Action Button */}
+
       
 {/* Modal */}
 {showModal && (
@@ -1072,28 +1084,32 @@ placeholder="Enter post title"
 </div>
 )}
 
-<div className="form-group">
-<label className="form-label">Intention</label>
+
+
+<div className="form-group clarification-section">
+<label className="form-label">Hypercell Clarification</label>
+  
+<div className="clarification-grid">
+<div className="clarification-field">
+<label className="sub-label">Intention</label>
 <input
 type="text"
+name="intention"
+required
 value={editFormData.intention}
 onChange={(e) => setEditFormData(prev => ({ ...prev, intention: e.target.value }))}
-className="form-input"
-required
-placeholder="e.g., This note is meant to be nice"
-maxLength={100}
-/>
+className="form-input compact"
+placeholder="Make your intention clear"
+maxLength={100}/>
 </div>
-
-<div className="form-group">
-<label className="form-label">Emoji</label>
+    
+<div className="clarification-field">
+<label className="sub-label">Emoji</label>
 <select
+name="emoji"
 value={editFormData.emoji}
-required
 onChange={(e) => setEditFormData(prev => ({ ...prev, emoji: e.target.value }))}
-className="form-select"
->
-          
+className="form-select compact">
 <option value="">Select emoji</option>
 <option value="😊">😊 Happy</option>
 <option value="😢">😢 Sad</option>
@@ -1136,6 +1152,31 @@ className="form-select"
 <option value="🏳️‍⚧️">🏳️‍⚧️ Transgender</option>
 </select>
 </div>
+    
+<div className="clarification-field">
+<label className="sub-label">Sentiment Tone</label>
+<select
+name="sentimentTone"
+value={editFormData.sentimentTone}
+onChange={(e) => setEditFormData(prev => ({ ...prev, sentimentTone: e.target.value }))}
+className="form-select compact"
+required>
+<option value="">Select tone</option>
+<option value="positively-positive">Positively Positive 😊</option>
+<option value="positively-negative">Positively Negative 😔</option>
+<option value="negatively-negative">Negatively Negative 😔</option>
+<option value="negatively-positive">Negatively Positive 😃</option>
+<option value="constructively-critical">Constructively Critical 🤔</option>
+<option value="neutrally-informative">Neutrally Informative 📝</option>
+<option value="supportively-encouraging">Supportively Encouraging 💪</option>
+<option value="questioningly-curious">Questioningly Curious ❓</option>
+<option value="humorously-light">Humorously Light 😄</option>
+<option value="seriously-concerned">Seriously Concerned ⚠️</option>
+</select>
+</div>
+</div>
+</div>
+
 
 <div className="form-group">
 <label className="form-label">Content</label>
@@ -1147,6 +1188,10 @@ className="form-textarea"
 required
 />
 </div>
+<div className={`character-count ${isOverLimit() ? 'over-limit' : ''}`}>
+{getCharacterCount()}/{getCharacterLimit()} characters
+</div>
+
 
 <div className="form-actions">
 <button type="button" onClick={handleCloseEdit} className="btn-secondary">
