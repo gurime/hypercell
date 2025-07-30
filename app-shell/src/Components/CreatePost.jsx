@@ -716,14 +716,14 @@ handleDropdownToggle(post.id);
 className="dropdown-item"
 onClick={() => handleEditPost(post)}>
 <Pencil size={16} />
-Edit Post
+Edit {post.type === 'note' ? 'Note' : 'Letter'}
 </button>
 
 <button 
 className="dropdown-item delete"
 onClick={() => handleDeletePost(post.id)}>
 <X size={16} />
-Delete Post
+Delete {post.type === 'note' ? 'Note' : 'Letter'}
 </button>
 </div>
 )}
@@ -759,7 +759,7 @@ data-tone={post.sentimentTone}>
 )}
 </div>
 
-<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+<div style={{ display: 'flex', alignItems: 'center', gap: '8px',marginTop: '8px' }}>
 
 {post.url && (
 <div className="url-link-container">
@@ -790,13 +790,7 @@ className={`interaction-btn ${likedPosts.has(post.id) ? 'liked' : ''}`}
 <Heart size={16} fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} />
 <span>{post.reactions || 0}</span>
 </button>
-    
-<button className="interaction-btn">
-<MessageSquare size={16} />
-<span>{post.annotations || 0}</span>
-</button>
 
-  
 <button
 onClick={() => handleBookmark(post.id)}
 className={`interaction-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`}
@@ -804,7 +798,14 @@ className={`interaction-btn ${bookmarkedPosts.has(post.id) ? 'bookmarked' : ''}`
 <Bookmark size={16} fill={bookmarkedPosts.has(post.id) ? 'currentColor' : 'none'} />
 <span>{post.bookmarks || 0}</span>
 </button>
-    
+      
+<button className="interaction-btn">
+<MessageSquare size={16} />
+<span>{post.annotations || 0}</span>
+</button>
+
+  
+
 <div className="share-container">
 <button 
 onClick={(e) => {
