@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X,LinkIcon, Mail, CreativeCommons, ArrowBigUp
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X,LinkIcon, Mail, CreativeCommons, ArrowBigUp, Vote, Trophy, Music, Shirt, Gamepad2, Laptop, Users, Dumbbell, GraduationCap, Film
  } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
@@ -566,7 +566,21 @@ healthFitness: 'Workout routines, fitness tips, nutrition guidance, and wellness
 education: 'Educational resources, discussions, and learning opportunities',
 entertainment: 'Entertainment news, reviews, and pop culture discussions'
 };
-// Categories and their images
+
+const categoryIcons = {
+  politics: Vote,
+  sports: Trophy,
+  music: Music,
+  fashion: Shirt,
+  gaming: Gamepad2,
+  tech: Laptop,
+  community: Users,
+  lifestyle: Heart, 
+  healthFitness: Dumbbell,
+  education: GraduationCap,
+  entertainment: Film
+};
+// Categories,Icons,and their images
 
 
 
@@ -634,6 +648,119 @@ return urlObj.hostname.replace('www.', '');
 return url;
 }
 };
+
+
+// Add these helper functions before your return statement:
+
+const getTrendingTopics = (category) => {
+  const topics = {
+    politics: [
+      { title: "Election Updates", posts: 142 },
+      { title: "Policy Changes", posts: 89 },
+      { title: "Congressional News", posts: 76 },
+      { title: "Local Government", posts: 45 }
+    ],
+    sports: [
+      { title: "Championship Finals", posts: 234 },
+      { title: "Trade Rumors", posts: 187 },
+      { title: "Player Injuries", posts: 156 },
+      { title: "Season Highlights", posts: 98 }
+    ],
+    music: [
+      { title: "New Releases", posts: 198 },
+      { title: "Concert Reviews", posts: 145 },
+      { title: "Artist Collaborations", posts: 123 },
+      { title: "Music Awards", posts: 87 }
+    ],
+    fashion: [
+      { title: "Fashion Week", posts: 167 },
+      { title: "Seasonal Trends", posts: 134 },
+      { title: "Designer Launches", posts: 112 },
+      { title: "Street Style", posts: 89 }
+    ],
+    gaming: [
+      { title: "Game Reviews", posts: 256 },
+      { title: "Console Updates", posts: 178 },
+      { title: "Esports News", posts: 145 },
+      { title: "Indie Games", posts: 92 }
+    ],
+    tech: [
+      { title: "AI Developments", posts: 289 },
+      { title: "Startup News", posts: 203 },
+      { title: "Product Launches", posts: 167 },
+      { title: "Tech Reviews", posts: 134 }
+    ],
+    community: [
+      { title: "Local Events", posts: 123 },
+      { title: "Volunteer Opportunities", posts: 98 },
+      { title: "Community Projects", posts: 76 },
+      { title: "Neighborhood News", posts: 54 }
+    ],
+    lifestyle: [
+      { title: "Wellness Tips", posts: 189 },
+      { title: "Home Decor", posts: 145 },
+      { title: "Travel Stories", posts: 123 },
+      { title: "Life Hacks", posts: 87 }
+    ],
+    healthFitness: [
+      { title: "Workout Routines", posts: 234 },
+      { title: "Nutrition Tips", posts: 198 },
+      { title: "Mental Health", posts: 167 },
+      { title: "Fitness Challenges", posts: 123 }
+    ],
+    education: [
+      { title: "Study Tips", posts: 156 },
+      { title: "Online Courses", posts: 134 },
+      { title: "Career Advice", posts: 112 },
+      { title: "Academic News", posts: 89 }
+    ],
+    entertainment: [
+      { title: "Movie Reviews", posts: 267 },
+      { title: "TV Show Discussions", posts: 234 },
+      { title: "Celebrity News", posts: 189 },
+      { title: "Streaming Updates", posts: 145 }
+    ]
+  };
+  return topics[category] || topics.community;
+};
+
+const getCategoryTags = (category) => {
+  const tags = {
+    politics: ["democracy", "policy", "elections", "government"],
+    sports: ["athletics", "competition", "teams", "championships"],
+    music: ["artists", "albums", "concerts", "genres"],
+    fashion: ["style", "trends", "designers", "runway"],
+    gaming: ["videogames", "esports", "reviews", "streaming"],
+    tech: ["innovation", "startups", "AI", "gadgets"],
+    community: ["local", "events", "volunteer", "neighborhood"],
+    lifestyle: ["wellness", "travel", "home", "personal"],
+    healthFitness: ["workout", "nutrition", "wellness", "fitness"],
+    education: ["learning", "skills", "career", "academic"],
+    entertainment: ["movies", "shows", "celebrities", "streaming"]
+  };
+  return tags[category] || tags.community;
+};
+
+const getTopContributors = (posts) => {
+  const contributors = {};
+  
+  posts.forEach(post => {
+    const author = post.author || 'Anonymous';
+    if (!contributors[author]) {
+      contributors[author] = {
+        name: author,
+        posts: 0,
+        likes: 0
+      };
+    }
+    contributors[author].posts++;
+    contributors[author].likes += post.reactions || 0;
+  });
+  
+  return Object.values(contributors)
+    .sort((a, b) => b.posts - a.posts)
+    .slice(0, 3);
+};
 //helper functions end here
 
 return (
@@ -658,20 +785,35 @@ backgroundImage: `url(${categoryImages[activeCategory]})`
 </div>
 {/* jumbotron stops here */}
 
-{/* Category Navigation */}
+
+<div className='feed-blok-container'>
+<div className='feed-blok-left'>
+
 <div className="category-nav">
-{categories.map(category => (
+<h1 className="category-title" style={{color: '#fff', fontSize: '2.5rem', marginBottom: '1rem',textAlign: 'center',borderBottom: 'solid 1px' + '#fff'}}>
+{activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
+</h1>
+{categories.map(category => {
+const IconComponent = categoryIcons[category.id];
+return (
 <button
 key={category.id}
 onClick={() => showCategory(category.id)}
 className={`category-pill ${activeCategory === category.id ? 'active' : ''}`}>
-{category.name}
+<IconComponent size={16} />
+{/* <span>{category.name}</span> */}
 </button>
-))}
+);
+})}
+{/* Scroll to Top Button */}
+{showScrollTop && (
+<button onClick={scrollToTopNav} className="category-pill">
+<ArrowBigUp size={24} />
+</button>
+)}
 </div>
-{/* Category Navigation */}
+</div>
 
-<div className='feed-blok-container'>
 <div className="feed-container">
    
 
@@ -851,12 +993,6 @@ Email
 <Pencil size={24} />
 </button>
 
-{/* Scroll to Top Button */}
-{showScrollTop && (
-<button onClick={scrollToTopNav} className="fabTop">
-<ArrowBigUp size={24} />
-</button>
-)}
 
 {/* Floating Action Button */}
 
@@ -1228,6 +1364,114 @@ onClick={() => setToast({ show: false, message: '', type: '' })}
 </div>
 </div>
 )}
+</div>
+
+
+<div className='feed-blok-right'>
+  <div className="sidebar-cards">
+    {/* Trending Topics Card */}
+    <div className="sidebar-card">
+      <div className="card-header">
+        <h3>Trending in {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h3>
+      </div>
+      <div className="card-content">
+        {getTrendingTopics(activeCategory).map((topic, index) => (
+          <div key={index} className="trending-item">
+            <span className="trending-number">#{index + 1}</span>
+            <div className="trending-content">
+              <p className="trending-title">{topic.title}</p>
+<span className="trending-posts">{topic.posts} {topic.type === 'note' ? 'Note' : 'Letter'}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Quick Stats Card */}
+    <div className="sidebar-card">
+      <div className="card-header">
+        <h3>Quick Stats</h3>
+      </div>
+      <div className="card-content">
+        <div className="stat-item">
+<span className="stat-number">{filteredPosts.length}</span>
+<span className="stat-label">Total {filteredPosts.length === 1 ? 'Post' : 'Posts'}</span>
+        </div>
+        <div className="stat-item">
+<span className="stat-number">{filteredPosts.filter(p => p.type === 'note').length}</span>
+<span className="stat-label">Notes</span>
+        </div>
+<div className="stat-item">
+<span className="stat-number">{filteredPosts.filter(p => p.type === 'letter' || p.type === 'detailed').length}</span>
+          <span className="stat-label">Letters</span>
+        </div>
+        <div className="stat-item">
+<span className="stat-number">{filteredPosts.reduce((sum, p) => sum + (p.reactions || 0), 0)}</span>
+          <span className="stat-label">Total Likes</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Category Info Card */}
+    <div className="sidebar-card">
+      <div className="card-header">
+        <h3>About {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h3>
+      </div>
+      <div className="card-content">
+        <p className="category-info">
+          {categoryDescriptions[activeCategory]}
+        </p>
+        <div className="category-tags">
+          {getCategoryTags(activeCategory).map((tag, index) => (
+            <span key={index} className="category-tag">#{tag}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Recent Activity Card */}
+    <div className="sidebar-card">
+      <div className="card-header">
+        <h3>Recent Activity</h3>
+      </div>
+      <div className="card-content">
+        {filteredPosts.slice(0, 3).map(post => (
+          <div key={post.id} className="activity-item">
+            <div className="activity-avatar">
+              {getInitials(post.author || names)}
+            </div>
+            <div className="activity-content">
+              <p className="activity-text">
+                <strong>{post.author || 'User'}</strong> posted a {post.type || 'note'}
+              </p>
+              <span className="activity-time">{formatTimestamp(post.timestamp)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Popular Authors Card */}
+    <div className="sidebar-card">
+      <div className="card-header">
+        <h3>Active Contributors</h3>
+      </div>
+      <div className="card-content">
+        {getTopContributors(filteredPosts).map((contributor, index) => (
+          <div key={index} className="contributor-item">
+            <div className="contributor-avatar">
+              {getInitials(contributor.name)}
+            </div>
+            <div className="contributor-info">
+              <p className="contributor-name">{contributor.name}</p>
+              <span className="contributor-posts">{contributor.posts} posts</span>
+            </div>
+            <span className="contributor-likes">{contributor.likes} ❤️</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
 </div>
 </div>
 </>
