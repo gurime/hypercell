@@ -1464,9 +1464,11 @@ onClick={() => setToast({ show: false, message: '', type: '' })}
             </div>
             <div className="contributor-info">
               <p className="contributor-name">{contributor.name}</p>
-              <span className="contributor-posts">{contributor.posts} posts</span>
+<span className="contributor-posts">
+  <strong>{post.author || 'User'}</strong> posted a {post.type || 'note'}
+ posts</span>
             </div>
-            <span className="contributor-likes">{contributor.likes} ❤️</span>
+            <span className="contributor-likes">{contributor.reactions} ❤️</span>
           </div>
         ))}
       </div>
