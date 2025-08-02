@@ -688,39 +688,44 @@ title: topic.charAt(0).toUpperCase() + topic.slice(1),
 posts: count
 }));
   
-  // If we don't have enough trending topics from actual data, fill with category-specific defaults
-  const defaultTopics = {
-    politics: [
-      { title: "Election Updates", posts: 0 },
-      { title: "Policy Changes", posts: 0 },
-      { title: "Congressional News", posts: 0 },
-      { title: "Local Government", posts: 0 }
-    ],
-    sports: [
-      { title: "Championship Finals", posts: 0 },
-      { title: "Trade Rumors", posts: 0 },
-      { title: "Player Injuries", posts: 0 },
-      { title: "Season Highlights", posts: 0 }
-    ],
-    music: [
-      { title: "New Releases", posts: 0 },
-      { title: "Concert Reviews", posts: 0 },
-      { title: "Artist Collaborations", posts: 0 },
-      { title: "Music Awards", posts: 0 }
-    ],
-    fashion: [
-      { title: "Fashion Week", posts: 0 },
-      { title: "Seasonal Trends", posts: 0 },
-      { title: "Designer Launches", posts: 0 },
-      { title: "Street Style", posts: 0 }
-    ],
-    gaming: [
-      { title: "Game Reviews", posts: 0 },
-      { title: "Console Updates", posts: 0 },
-      { title: "Esports News", posts: 0 },
-      { title: "Indie Games", posts: 0 }
+// If we don't have enough trending topics from actual data, fill with category-specific defaults
+const defaultTopics = {
+politics: [
+{ title: "Election Updates", posts: 0 },
+{ title: "Policy Changes", posts: 0 },
+{ title: "Congressional News", posts: 0 },
+{ title: "Local Government", posts: 0 }
 ],
-    tech: [
+
+sports: [
+{ title: "Championship Finals", posts: 0 },
+{ title: "Trade Rumors", posts: 0 },
+{ title: "Player Injuries", posts: 0 },
+{ title: "Season Highlights", posts: 0 }
+],
+
+music: [
+{ title: "New Releases", posts: 0 },
+{ title: "Concert Reviews", posts: 0 },
+{ title: "Artist Collaborations", posts: 0 },
+{ title: "Music Awards", posts: 0 }
+],
+
+fashion: [
+{ title: "Fashion Week", posts: 0 },
+{ title: "Seasonal Trends", posts: 0 },
+{ title: "Designer Launches", posts: 0 },
+{ title: "Street Style", posts: 0 }
+],
+
+gaming: [
+{ title: "Game Reviews", posts: 0 },
+{ title: "Console Updates", posts: 0 },
+{ title: "Esports News", posts: 0 },
+{ title: "Indie Games", posts: 0 }
+],
+
+tech: [
 { title: "AI Developments", posts: 0 },
 { title: "Startup News", posts: 0 },
 { title: "Product Launches", posts: 0 },
@@ -774,6 +779,8 @@ return trendingTopics;
 }
 return defaultTopics[category] || defaultTopics.community;
 };
+
+
 
 const getCategoryTags = (category) => {
 const tags = {
@@ -1443,7 +1450,7 @@ onClick={() => setToast({ show: false, message: '', type: '' })}
 {/* Trending Topics Card - Now uses actual Firebase data */}
 <div className="sidebar-card">
 <div className="card-header">
-<h3>Trending in {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h3>
+<h3>Hop Topics in {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h3>
 </div>
 
 <div className="card-content">
@@ -1468,7 +1475,7 @@ onClick={() => setToast({ show: false, message: '', type: '' })}
 <div className="card-content">
 <div className="stat-item">
 <span className="stat-number">{filteredPosts.length}</span>
-<span className="stat-label">Total {filteredPosts.length === 1 ? 'Post' : 'Posts'}</span>
+<span className="stat-label">Total {filteredPosts.length === 1 ? 'Note' : 'Thoughts'}</span>
 </div>
 
 <div className="stat-item">
@@ -1521,7 +1528,7 @@ onClick={() => setToast({ show: false, message: '', type: '' })}
 
 <div className="activity-content">
 <p className="activity-text">
-<strong>{post.author || 'User'}</strong> posted a {post.type || 'note'}
+<strong>{post.author || 'User'}</strong> wrote a {post.type || 'note'}
 </p>
 <span className="activity-time">{formatTimestamp(post.timestamp)}</span>
 </div>
