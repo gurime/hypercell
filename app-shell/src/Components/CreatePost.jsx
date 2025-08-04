@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X,LinkIcon, Mail, CreativeCommons, ArrowBigUp, Vote, Trophy, Music, Shirt, Gamepad2, Laptop, Users, Dumbbell, GraduationCap, Film
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, Pencil, X,LinkIcon, Mail,  ArrowBigUp, Vote, Trophy, Music, Shirt, Gamepad2, Laptop, Users, Dumbbell, GraduationCap, Film
  } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
@@ -49,6 +49,7 @@ const [loading, setLoading] = useState(true);
 const [showModal, setShowModal] = useState(false);
 const [postType, setPostType] = useState('note');
 const [userEmail, setUserEmail] = useState('');
+const [error, setError] = useState(null);
 const [names, setNames] = useState('');
 const [isSignedIn, setIsSignedIn] = useState();
 const [editFormData, setEditFormData] = useState({
@@ -68,7 +69,7 @@ intention: '',
 emoji: '',
 sentimentTone: '' 
 });
-const [error, setError] = useState(null);
+
 const [toast, setToast] = useState({ show: false, message: '', type: '' });
 const showToast = (message, type = 'success') => {
 setToast({ show: true, message, type });
@@ -1425,23 +1426,6 @@ Update Post
 </div>
 )}
 
-{toast.show && (
-<div className={`toast ${toast.type}`}>
-<div className="toast-content">
-<span className="toast-icon">
-{toast.type === 'success' ? '✓' : '✕'}
-</span>
-
-<span className="toast-message">{toast.message}</span>
-<button 
-className="toast-close"
-onClick={() => setToast({ show: false, message: '', type: '' })}
->
-×
-</button>
-</div>
-</div>
-)}
 </div>
 
 
@@ -1565,6 +1549,23 @@ onClick={() => setToast({ show: false, message: '', type: '' })}
 
 </div>
 </div>
+
+{toast.show && (
+<div className={`toast ${toast.type}`}>
+<div className="toast-content">
+<span className="toast-icon">
+{toast.type === 'success' ? '✓' : '✕'}
+</span>
+<span className="toast-message">{toast.message}</span>
+<button 
+className="toast-close"
+onClick={() => setToast({ show: false, message: '', type: '' })}
+>
+×
+</button>
+</div>
+</div>
+)}
 </>
   );
 }

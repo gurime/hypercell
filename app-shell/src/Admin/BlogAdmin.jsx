@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 import { useNavigate } from 'react-router-dom';
+import BounceLoader from 'react-spinners/BounceLoader';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 export default function Blogdmin() {
@@ -334,13 +335,13 @@ required/>
 </div>
 );
 }
-
+// Don't render form if user is not signed in
 return (
 <>
 <Navbar/>
 <div className="admin-cms-container">
 <div className="admin-header">
-<h1 className="admin-title">Blog CMS - Add New Post</h1>
+<h1 className="admin-title">Admin CMS - Add New Article</h1>
 <div className="admin-user-info">
 <span className="admin-user-email">{userEmail}</span>
 <button onClick={handleLogout} className="admin-button admin-button-secondary">
@@ -402,6 +403,11 @@ required/>
     <option value="fashion">Fashion</option>
     <option value="gaming">Gaming</option>
     <option value="tech">Technology</option>
+    <option value="entertainment">Entertainment</option>
+    <option value="community">Community</option>
+    <option value="lifestyle">Lifestyle</option>
+    <option value="healthFitness">Health & Fitness</option>
+    <option value="education">Education</option>
   </select>
 </div>
 
@@ -428,18 +434,6 @@ placeholder="e.g., 4 min read"
 required/>
 </div>
 
-<div className="admin-form-group">
-<label className="admin-checkbox-label">
-<input
-type="checkbox"
-name="featured"
-checked={formData.featured}
-onChange={handleInputChange}
-className="admin-checkbox"
-/>
-Featured Post
-</label>
-</div>
 </div>
 
 {/* Content Sections */}
@@ -525,7 +519,7 @@ className="admin-tag-remove">×
 type="submit"
 className="admin-button admin-button-primary admin-submit-button"
 disabled={loading || isSubmitting}>
-{loading ? 'Publishing...' : 'Publish Blog Post'}
+{loading ? <BounceLoader size={20} color="#fff" /> : 'Publish Article'}
 </button>
 </form>
 </div>

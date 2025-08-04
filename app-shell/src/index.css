@@ -1768,6 +1768,8 @@ margin-bottom: 24px;
   }
 }
 
+
+
  /* admin css */
 
  /* craete Post */
@@ -1910,6 +1912,260 @@ font-size: 0.8rem;  }
 .back-button:hover {
   background-color: #374151;
 }
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-container h2 {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.error-container p {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+/* Main Article Container */
+.article-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  line-height: 1.7;
+  color: #333;
+}
+
+/* Article Header */
+.article-header {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.article-meta-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.article-category {
+  background: #2637be;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.article-date {
+  color: #666;
+  font-style: italic;
+}
+
+.article-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  line-height: 1.2;
+  margin: 1rem 0 1.5rem 0;
+  color: #1a1a1a;
+}
+
+.article-meta-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author-name {
+  font-weight: 600;
+  color: #2637be;
+  font-size: 1rem;
+}
+
+.read-time {
+  color: #666;
+  font-size: 0.9rem;
+  background: #f5f5f5;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+}
+
+.article-back-button {
+  background: transparent;
+  border: 2px solid #2637be;
+  color: #2637be;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.article-back-button:hover {
+  background: #2637be;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.article-content {
+  margin-bottom: 3rem;
+}
+
+.articles-body {
+  margin-bottom: 2rem;
+}
+
+.articles-body h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 2rem 0 1rem 0;
+  color: #1a1a1a;
+  border-left: 4px solid #2637be;
+  padding-left: 1rem;
+}
+
+.articles-body p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  text-align: justify;
+  color: #444;
+}
+
+/* Article Footer */
+.article-footer {
+  border-top: 2px solid #f0f0f0;
+  padding-top: 2rem;
+  margin-top: 3rem;
+}
+
+.author-section {
+  margin-bottom: 2rem;
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #2637be;
+}
+
+.author-details h4 {
+  color: #2637be;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.author-details p {
+  color: #666;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.article-tags h5 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background: #e8f0fe;
+  color: #2637be;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid #d0e3ff;
+  transition: all 0.3s ease;
+}
+
+.tag:hover {
+  background: #2637be;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .article-container {
+    padding: 1rem 0.75rem;
+  }
+  
+  .article-title {
+    font-size: 2rem;
+  }
+  
+  .articles-body h2 {
+    font-size: 1.5rem;
+  }
+  
+  .articles-body p {
+    font-size: 1rem;
+    text-align: left;
+  }
+  
+  .article-meta-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .author-section {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .article-title {
+    font-size: 1.75rem;
+  }
+  
+  .article-meta-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .tags-list {
+    justify-content: flex-start;
+  }
+}
+
 
 
 /* Toast Notification */

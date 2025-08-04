@@ -5,7 +5,6 @@ import Profile from './auth/Profile'
 import Signup from "./auth/Signup"
 import Login from "./auth/Login"
 import RequireAuth from './auth/RequireAuth'
-import Details from "./Components/Details"
 import BlogAdmin from "./Admin/BlogAdmin"
 import CommunityDetails from "./Components/CommunityDetails"
 function App() {
@@ -16,7 +15,7 @@ return (
 <RequireAuth>
 <Home />
 </RequireAuth>}/>
-<Route path='/blog/:id' element={<Details/>}/>
+<Route path='/blog/:id' element={<Articles/>}/>
 <Route path='/community/:id' element={<CommunityDetails/>}/>
 {/* Other routes */}
 <Route path="/profile" element={<Profile />} />
