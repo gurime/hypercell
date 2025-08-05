@@ -4,7 +4,7 @@ import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, P
  } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
-import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc, serverTimestamp, query, orderBy, where, limit } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
 export default function CreatePost() {
@@ -35,6 +35,8 @@ block: 'start'
 };
 const searchParams = new URLSearchParams(location.search);
 const initialCategory = searchParams.get('category') || 'politics';
+const [articles, setArticles] = useState([]);
+const [loadingArticles, setLoadingArticles] = useState(true);
 const [isJumbotronVisible, setIsJumbotronVisible] = useState(true);
 const [activeCategory, setActiveCategory] = useState(initialCategory);
 const [activeDropdown, setActiveDropdown] = useState(null);
@@ -448,6 +450,32 @@ return () => document.removeEventListener('click', handleClickOutside);
 
 
 
+useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        console.log('Starting to fetch articles...'); // Debug log
+        const querySnapshot = await getDocs(collection(db, 'blogs'));
+        console.log('Query snapshot size:', querySnapshot.size); // Debug log
+        
+        const articles = querySnapshot.docs.map(doc => {
+          const data = { _id: doc.id, ...doc.data() };
+          console.log('Article data:', data); // Debug log
+          return data;
+        });
+        
+        console.log('All articles:', articles); // Debug log
+        setArticles(articles);
+        setLoadingArticles(false);
+      } catch (error) {
+        console.error('Error fetching articles:', error); // This will show the actual error
+        setError(error.message);
+        setLoadingArticles(false);
+      }
+    };
+    fetchArticles();
+}, [id]);
+
+
 
 
 
@@ -644,6 +672,22 @@ if (hours < 24) return `${hours}h ago`;
 if (hours < 48) return '1d ago';
 return date.toLocaleDateString();
 };
+
+const formatArticleDate = (date) => {
+if (!date) return '';
+const articleDate = new Date(date);
+const now = new Date();
+const diffTime = Math.abs(now - articleDate);
+const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+if (diffDays === 0) return 'Today';
+if (diffDays === 1) return 'Yesterday';
+if (diffDays < 7) return `${diffDays} days ago`;
+return articleDate.toLocaleDateString('en-US', { 
+month: 'short', 
+day: 'numeric' 
+});
+};
+
 
 const getInitials = (name) => {
 if (!name) return 'U';
@@ -1431,10 +1475,53 @@ Update Post
 
 <div className='feed-blok-right'>
 <div className="sidebar-cards">
+ <div className="sidebar-card">
+  <div className="card-header">
+    <h3>Latest Articles</h3>
+  </div>
+  
+  <div className="card-content">
+    {loadingArticles ? (
+      <div className="articles-loading">
+        <p>Loading articles...</p>
+      </div>
+    ) : articles.length === 0 ? (
+      <div className="no-articles">
+        <p>No articles available</p>
+      </div>
+    ) : (
+      articles.map((article) => (
+        <div 
+          key={article.id} 
+          className="article-item"
+          onClick={() => navigate(`/articles/${article.id}`)}
+        >
+          <div className="article-content">
+            <h4 className="article-title">{article.title}</h4>
+            <div className="article-meta">
+              {article.category && (
+                <span className="article-category">{article.category}</span>
+              )}
+              <span className="article-date">{formatArticleDate(article.date)}</span>
+            </div>
+            {article.content && (
+              <p className="article-excerpt">
+                {article.content.substring(0, 100)}...
+              </p>
+            )}
+            {article.readTime && (
+              <span className="article-read-time">{article.readTime} min read</span>
+            )}
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+</div>
 {/* Trending Topics Card - Now uses actual Firebase data */}
 <div className="sidebar-card">
 <div className="card-header">
-<h3>Hop Topics in {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h3>
+<h3>Hot Topics in {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h3>
 </div>
 
 <div className="card-content">
@@ -1451,7 +1538,7 @@ Update Post
 </div>
 
 {/* Quick Stats Card - Uses actual filtered posts */}
-<div className="sidebar-card">
+{/* <div className="sidebar-card">
 <div className="card-header">
 <h3>Quick Stats</h3>
 </div>
@@ -1477,7 +1564,7 @@ Update Post
 <span className="stat-label">Total Hearts</span>
 </div>
 </div>
-</div>
+</div> */}
 
 {/* Category Info Card */}
 <div className="sidebar-card">
@@ -1522,7 +1609,7 @@ Update Post
 </div>
 
 {/* Active Contributors Card - Uses actual Firebase data */}
-<div className="sidebar-card">
+{/* <div className="sidebar-card">
 <div className="card-header">
 <h3>Active Contributors</h3>
 </div>
@@ -1543,7 +1630,7 @@ Update Post
 </div>
 ))}
 </div>
-</div>
+</div> */}
 </div>
 
 

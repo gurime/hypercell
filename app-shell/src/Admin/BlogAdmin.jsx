@@ -48,7 +48,8 @@ content5: '',
 contentTitle6: '',
 content6: '',
 contentTitle7: '',
-content7: ''
+content7: '',
+tags: [] // Add this line to the formData reset
 });
   
 
@@ -225,7 +226,8 @@ setFormData({
  contentTitle6: '',
  content6: '',
  contentTitle7: '',
- content7: ''
+ content7: '',
+tags: [] // Reset tags in formData as well
 });
 setTags([]); // This is correct - resetting the tags state    
 } catch (error) {

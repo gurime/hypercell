@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Navbar from './Navbar'
 import Footer from './Footer'
 import { useNavigate } from 'react-router';
@@ -11,6 +12,13 @@ export default function Articles() {
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
 const [articles, setArticles] = useState(null);
+const [toast, setToast] = useState({ show: false, message: '', type: '' });
+const showToast = (message, type = 'success') => {
+setToast({ show: true, message, type });
+setTimeout(() => {
+setToast({ show: false, message: '', type: '' });
+}, 4000);
+};
 const { id } = useParams();
 const navigate = useNavigate();
 
@@ -151,6 +159,22 @@ day: 'numeric'
 )}
 </article>
 <Footer/>
+{toast.show && (
+<div className={`toast ${toast.type}`}>
+<div className="toast-content">
+<span className="toast-icon">
+{toast.type === 'success' ? '✓' : '✕'}
+</span>
+<span className="toast-message">{toast.message}</span>
+<button 
+className="toast-close"
+onClick={() => setToast({ show: false, message: '', type: '' })}
+>
+×
+</button>
+</div>
+</div>
+)}
 </>
 )
 }

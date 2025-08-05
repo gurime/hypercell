@@ -7,6 +7,7 @@ import Login from "./auth/Login"
 import RequireAuth from './auth/RequireAuth'
 import BlogAdmin from "./Admin/BlogAdmin"
 import CommunityDetails from "./Components/CommunityDetails"
+import Articles from "./Components/Articles"
 function App() {
 return (
 <>
@@ -15,7 +16,7 @@ return (
 <RequireAuth>
 <Home />
 </RequireAuth>}/>
-<Route path='/blog/:id' element={<Articles/>}/>
+<Route path='/articles/:id' element={<Articles/>}/>
 <Route path='/community/:id' element={<CommunityDetails/>}/>
 {/* Other routes */}
 <Route path="/profile" element={<Profile />} />
