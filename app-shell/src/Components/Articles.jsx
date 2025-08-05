@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { db } from '../db/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 export default function Articles() {
@@ -23,30 +23,24 @@ const { id } = useParams();
 const navigate = useNavigate();
 
 useEffect(() => {
-const fetchBlog = async () => {
+const fetchArticles = async () => {
 try {
-const docRef = doc(db, 'blogs', id);
-const docSnap = await getDoc(docRef);
-if (docSnap.exists()) {
-setArticles({
-_id: docSnap.id,...docSnap.data()
+const querySnapshot = await getDocs(collection(db, 'blogs'));
+const articles = querySnapshot.docs.map(doc => {
+const data = { _id: doc.id, ...doc.data() };
+return data;
 });
-} else {
-setError("Article not found");
-}
+setArticles(articles);
+setLoading(false);
 } catch (error) {
 setError(error.message);
-} finally {
-setLoading(false);
+setLoadingArticles(false);
+showToast('Failed to load articles', 'error');
 }
 };
-if (id) {
-fetchBlog();
-} else {
-setError("No article ID provided");
-setLoading(false);
-}
-}, [id]); 
+fetchArticles();
+}, [id]);
+
 
 // Helper function to render content sections dynamically
 const renderContentSections = () => {

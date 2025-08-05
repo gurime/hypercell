@@ -4,9 +4,9 @@ import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, ExternalLink, P
  } from 'lucide-react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router';
 import { auth, db } from '../db/firebase';
-import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc, serverTimestamp, query, orderBy, where, limit } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, updateDoc, increment, deleteDoc, serverTimestamp, query, orderBy} from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-
+import BounceLoader from 'react-spinners/BounceLoader';
 export default function CreatePost() {
 const location = useLocation();
 const navigate = useNavigate();
@@ -1475,48 +1475,51 @@ Update Post
 
 <div className='feed-blok-right'>
 <div className="sidebar-cards">
- <div className="sidebar-card">
-  <div className="card-header">
-    <h3>Latest Articles</h3>
-  </div>
+<div className="sidebar-card">
+<div className="card-header">
+<h3>Latest Articles</h3>
+</div>
   
-  <div className="card-content">
-    {loadingArticles ? (
-      <div className="articles-loading">
-        <p>Loading articles...</p>
-      </div>
-    ) : articles.length === 0 ? (
-      <div className="no-articles">
-        <p>No articles available</p>
-      </div>
-    ) : (
-      articles.map((article) => (
-        <div 
-          key={article.id} 
-          className="article-item"
-          onClick={() => navigate(`/articles/${article.id}`)}
-        >
-          <div className="article-content">
-            <h4 className="article-title">{article.title}</h4>
-            <div className="article-meta">
-              {article.category && (
-                <span className="article-category">{article.category}</span>
-              )}
-              <span className="article-date">{formatArticleDate(article.date)}</span>
-            </div>
-            {article.content && (
-              <p className="article-excerpt">
-                {article.content.substring(0, 100)}...
-              </p>
-            )}
-            {article.readTime && (
-              <span className="article-read-time">{article.readTime} min read</span>
-            )}
-          </div>
-        </div>
-      ))
-    )}
-  </div>
+<div className="card-content">
+{loadingArticles ? (
+<div className="articles-loading">
+<p><BounceLoader color={"#36d7b7"} size={60}/></p>
+</div>
+) : articles.length === 0 ? (
+<div className="no-articles">
+<p>No articles available</p>
+</div>
+) : (
+articles.map((article) => (
+<div 
+key={article.id} 
+className="article-item"
+onClick={() => navigate(`/articles/${article.id}`)}>
+
+<div className="article-content">
+<h4 className="article-title">{article.title}</h4>
+<div className="article-meta">
+
+{article.category && (
+<span className="article-category">{article.category}</span>
+)}
+<span className="article-date">{formatArticleDate(article.date)}</span>
+</div>
+
+{article.content && (
+<p className="article-excerpt">
+{article.content.substring(0, 100)}...
+</p>
+)}
+
+{article.readTime && (
+<span className="article-read-time">{article.readTime} min read</span>
+)}
+</div>
+</div>
+))
+)}
+</div>
 </div>
 {/* Trending Topics Card - Now uses actual Firebase data */}
 <div className="sidebar-card">
