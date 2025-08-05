@@ -451,28 +451,22 @@ return () => document.removeEventListener('click', handleClickOutside);
 
 
 useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        console.log('Starting to fetch articles...'); // Debug log
-        const querySnapshot = await getDocs(collection(db, 'blogs'));
-        console.log('Query snapshot size:', querySnapshot.size); // Debug log
-        
-        const articles = querySnapshot.docs.map(doc => {
-          const data = { _id: doc.id, ...doc.data() };
-          console.log('Article data:', data); // Debug log
-          return data;
-        });
-        
-        console.log('All articles:', articles); // Debug log
-        setArticles(articles);
-        setLoadingArticles(false);
-      } catch (error) {
-        console.error('Error fetching articles:', error); // This will show the actual error
-        setError(error.message);
-        setLoadingArticles(false);
-      }
-    };
-    fetchArticles();
+  const fetchArticles = async () => {
+try {
+const querySnapshot = await getDocs(collection(db, 'blogs'));
+const articles = querySnapshot.docs.map(doc => {
+const data = { id: doc.id, ...doc.data() };
+return data;
+});
+setArticles(articles);
+setLoadingArticles(false);
+} catch (error) {
+setError(error.message);
+setLoadingArticles(false);
+showToast('Error fetching articles', 'error');
+}
+};
+fetchArticles();
 }, [id]);
 
 
@@ -883,6 +877,13 @@ parts.push(`${contributor.letters} ${contributor.letters === 1 ? 'letter' : 'let
 }  
 return parts.join(' + ') || '0 notes/letters';
 };
+
+const getFilteredArticles = () => {
+  return articles.filter(article => 
+    article.category && article.category.toLowerCase() === activeCategory.toLowerCase()
+  );
+};
+
 //helper functions end here
 
 return (
@@ -1475,29 +1476,27 @@ Update Post
 
 <div className='feed-blok-right'>
 <div className="sidebar-cards">
-<div className="sidebar-card">
-<div className="card-header">
-<h3>Latest Articles</h3>
-</div>
-  
 <div className="card-content">
 {loadingArticles ? (
 <div className="articles-loading">
 <p><BounceLoader color={"#36d7b7"} size={60}/></p>
 </div>
-) : articles.length === 0 ? (
+) : getFilteredArticles().length === 0 ? (
 <div className="no-articles">
-<p>No articles available</p>
+<p>No articles available for {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</p>
 </div>
 ) : (
-articles.map((article) => (
+getFilteredArticles().slice(0, 5).map((article) => ( // Show max 5 articles
 <div 
 key={article.id} 
 className="article-item"
 onClick={() => navigate(`/articles/${article.id}`)}>
 
 <div className="article-content">
-<h4 className="article-title">{article.title}</h4>
+<h4 className="article-title" style={{
+  fontSize: article.title.length > 60 ? '1rem' : '1.2rem',
+  lineHeight: article.title.length > 60 ? '1.2rem' : '1.5rem'
+}}>{article.title.slice(0, 60)}{article.title.length > 60 && '...'}</h4>
 <div className="article-meta">
 
 {article.category && (
@@ -1519,7 +1518,6 @@ onClick={() => navigate(`/articles/${article.id}`)}>
 </div>
 ))
 )}
-</div>
 </div>
 {/* Trending Topics Card - Now uses actual Firebase data */}
 <div className="sidebar-card">

@@ -23,25 +23,27 @@ const { id } = useParams();
 const navigate = useNavigate();
 
 useEffect(() => {
-const fetchArticles = async () => {
+const fetchArticle = async () => {
 try {
-const querySnapshot = await getDocs(collection(db, 'blogs'));
-const articles = querySnapshot.docs.map(doc => {
-const data = { _id: doc.id, ...doc.data() };
-return data;
-});
-setArticles(articles);
+const docRef = doc(db, 'blogs', id);
+const docSnap = await getDoc(docRef);
+if (docSnap.exists()) {
+setArticles(docSnap.data());
+setLoading(false);      
+showToast('Article loaded successfully', 'success');
+} else {
+setError('Article not found');
 setLoading(false);
-} catch (error) {
-setError(error.message);
-setLoadingArticles(false);
-showToast('Failed to load articles', 'error');
+showToast('Article not found', 'error');
+}
+} catch (err) {
+setError(err.message);
+setLoading(false);
+showToast('Error loading article', 'error');
 }
 };
-fetchArticles();
+fetchArticle();
 }, [id]);
-
-
 // Helper function to render content sections dynamically
 const renderContentSections = () => {
 const sections = [];
