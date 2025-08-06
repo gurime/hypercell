@@ -91,6 +91,7 @@ return (
 return (
 <>
 <Navbar/>
+<div className="article-big-container">
 <article className="article-container">
 <header className="article-header">
 <div className="article-meta-top">
@@ -122,7 +123,7 @@ day: 'numeric'
 </div>
           
 <button className="article-back-button" onClick={() => navigate(-1)}>
-← Back to What's Happening
+← Go Back
 </button>
 </header>
 
@@ -171,6 +172,7 @@ onClick={() => setToast({ show: false, message: '', type: '' })}
 </div>
 </div>
 )}
+</div>
 </>
 )
 }

@@ -1944,11 +1944,17 @@ font-size: 0.8rem;  }
 }
 
 /* Main Article Container */
+.article-big-container {
+    background: linear-gradient(145deg, #0f1419 0%, #16181c 100%);
+    width: 100%;
+    background: #1e293bf2;
+}
 .article-container {
     margin: 0 auto;
     padding: 2rem 1rem;
     line-height: 1.7;
-    background: #1e293bf2;
+        max-width: 800px;
+
 }
 
 /* Article Header */

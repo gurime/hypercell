@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import navlogo from '/images/assets/hypercell_social.png'
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from "react-router";
@@ -7,6 +8,7 @@ import { doc, getDoc} from 'firebase/firestore';
 
 export default function Navbar() {
 const [isSignedIn, setIsSignedIn] = useState(false);
+const [isAdmin, setIsAdmin] = useState(false);
 const [names, setNames] = useState('');
 const [notifications, setNotifications] = useState(0); // For notification badge
 const navRef = useRef(null);
@@ -81,24 +83,23 @@ const getInitials = (name) => {
 return name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
 };
 
-  return (
-    <nav ref={navRef} tabIndex={-1} className="navbar" id="top-navbar">
-      <div className="logo">
-        <Link to="/">
-          <img src={navlogo} alt="Hypercell Social Logo"/>
-        </Link>
-      </div>
+return (
+<nav ref={navRef} tabIndex={-1} className="navbar" id="top-navbar">
+<div className="logo">
+<Link to="/">
+<img src={navlogo} alt="Hypercell Social Logo"/>
+</Link>
+</div>
 
-      <ul className="navlinks">
-        {isSignedIn ? (
-          <div className='icon-nav'>
-            <Link 
-              to='/' 
-              title='Home'
-              className={isActiveLink('/') ? 'active' : ''}
-            >
-              <House size={20} color='#8b5cf6' />
-            </Link>
+<ul className="navlinks">
+{isSignedIn ? (
+<div className='icon-nav'>
+<Link 
+to='/' 
+title='Home'
+className={isActiveLink('/') ? 'active' : ''}>
+<House size={20} color='#8b5cf6' />
+</Link>
 
 
 <Link to='/profile' >{names}</Link>    
@@ -123,35 +124,35 @@ style={{ position: 'relative' }}>
 )}
 </Link>
             
-            <Link 
-              to='/friends' 
-              title='Friends'
-              className={isActiveLink('/friends') ? 'active' : ''}
-            >
-              <Users size={20} color='#8b5cf6' />
-            </Link>
+<Link 
+to='/friends' 
+title='Friends'
+className={isActiveLink('/friends') ? 'active' : ''}
+>
+<Users size={20} color='#8b5cf6' />
+</Link>
             
-            <button 
-              title='Logout' 
-              onClick={handleLogout}
-              className="logout-button"
-            >
-              <LogOut size={20} color='#8b5cf6' />
-            </button>
-          </div>
-        ) : (
-          <div className="auth-links">
-            <Link to='/login' title='Sign In'>
-              <LogIn size={16} />
-              Sign In
-            </Link>
-            <Link to='/signup' title='Sign Up'>
-              <UserPlus size={16} />
-              Sign Up
-            </Link>
-          </div>
-        )}
-      </ul>
-    </nav>
-  );
+<button 
+title='Logout' 
+onClick={handleLogout}
+className="logout-button"
+>
+<LogOut size={20} color='#8b5cf6' />
+</button>
+</div>
+) : (
+<div className="auth-links">
+<Link to='/login' title='Sign In'>
+<LogIn size={16} />
+Sign In
+</Link>
+
+<Link to='/signup' title='Sign Up'>
+<UserPlus size={16} />
+Sign Up
+</Link>
+</div>
+)}
+</ul>
+</nav>);
 }

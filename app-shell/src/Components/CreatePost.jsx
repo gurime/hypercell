@@ -879,9 +879,16 @@ return parts.join(' + ') || '0 notes/letters';
 };
 
 const getFilteredArticles = () => {
-  return articles.filter(article => 
-    article.category && article.category.toLowerCase() === activeCategory.toLowerCase()
-  );
+return articles.filter(article => 
+article.category && article.category.toLowerCase() === activeCategory.toLowerCase()
+);
+};
+
+const isPostOwner = (post) => {
+if (!auth.currentUser) return false;
+// Check if current user is the author by comparing user ID or email
+return post.authorId === auth.currentUser.uid || 
+post.authorEmail === auth.currentUser.email;
 };
 
 //helper functions end here
@@ -976,7 +983,7 @@ handleDropdownToggle(post.id);
 <MoreHorizontal size={20} />
 </button>
   
-{activeDropdown === post.id && (
+{activeDropdown === post.id && isPostOwner(post) && (
 <div className="post-dropdown">
 <button 
 className="dropdown-item"

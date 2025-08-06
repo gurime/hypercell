@@ -13,12 +13,14 @@ export default function CommunityPostDetails() {
   const { id } = useParams();
   
   const [post, setPost] = useState(null);
+  const [postsList, setPostsList] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [commentLoading, setCommentLoading] = useState(false);
   const [names, setNames] = useState('Current User');
   const [reactedComments, setReactedComments] = useState(new Set());
+  const [likedPosts, setLikedPosts] = useState(new Set());
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
@@ -109,6 +111,21 @@ useEffect(() => {
   fetchPost();
 }, [id]);
 
+useEffect(() => {
+  // Initialize liked posts state - you might want to fetch user's liked posts from Firebase
+  // For now, this is just a placeholder
+  const initializeLikedPosts = () => {
+    // You could fetch user's liked posts from a separate collection or user document
+    // setLikedPosts(new Set(userLikedPostIds));
+  };
+  
+  if (isSignedIn) {
+    initializeLikedPosts();
+  }
+}, [isSignedIn]);
+
+const COMMENT_LIMIT = 500; // Add this constant
+
   // Fetch comments
   useEffect(() => {
     const fetchComments = async () => {
@@ -158,7 +175,7 @@ useEffect(() => {
 
 const handleReactionClick = async (postId) => {
   if (!auth.currentUser) {
-    alert('Sign in to like');
+    showToast('Sign in to like notes', 'error');
     return;
   }
 
@@ -176,17 +193,11 @@ const handleReactionClick = async (postId) => {
     return newSet;
   });
 
-  // Update posts list (optimistic update)
-  setPostsList(prevPosts =>
-    prevPosts.map(post =>
-      post.id === postId
-        ? {
-            ...post,
-            reactions: (post.reactions || 0) + (isCurrentlyLiked ? -1 : 1),
-          }
-        : post
-    )
-  );
+  // Update the current post state (optimistic update)
+  setPost(prevPost => ({
+    ...prevPost,
+    reactions: (prevPost.reactions || 0) + (isCurrentlyLiked ? -1 : 1)
+  }));
 
   // Update Firestore
   try {
@@ -198,16 +209,10 @@ const handleReactionClick = async (postId) => {
   } catch (error) {
     console.error('Error updating like:', error);
     // Revert optimistic update on error
-    setPostsList(prevPosts =>
-      prevPosts.map(post =>
-        post.id === postId
-          ? {
-              ...post,
-              reactions: (post.reactions || 0) + (isCurrentlyLiked ? 1 : -1),
-            }
-          : post
-      )
-    );
+    setPost(prevPost => ({
+      ...prevPost,
+      reactions: (prevPost.reactions || 0) + (isCurrentlyLiked ? 1 : -1)
+    }));
     setLikedPosts(prev => {
       const newSet = new Set(prev);
       if (isCurrentlyLiked) {
@@ -217,9 +222,9 @@ const handleReactionClick = async (postId) => {
       }
       return newSet;
     });
+    showToast('Error updating reaction. Please try again.', 'error');
   }
 };
-
 
 const handleCommentSubmit = async () => {
   if (!newComment.trim()) {
@@ -382,6 +387,15 @@ const handleCommentSubmit = async () => {
               </div>
             )}
 
+            {post.type && (
+  <div className="post-type-section">
+    <span className={`post-type-badge ${post.type === 'detailed' || post.type === 'letter' ? 'letter' : 'note'}`}>
+      {post.type === 'detailed' ? 'letter' : post.type || 'note'}
+    </span>
+  </div>
+)}
+
+
             {/* Title */}
             {post.title && (
               <h1 className="community-post-title">
@@ -409,6 +423,14 @@ const handleCommentSubmit = async () => {
                 {post.intention && <span className="clarify-text">"{post.intention}"</span>}
               </div>
             )}
+
+            {post.sentimentTone && (
+  <div className="post-sentiment" data-tone={post.sentimentTone}>
+    <div className="sentiment-display">
+      <span className="sentiment-tone">Sentiment: {post.sentimentTone}</span>
+    </div>
+  </div>
+)}
 
             {/* Media */}
             {post.imageUrl && (
@@ -445,17 +467,18 @@ const handleCommentSubmit = async () => {
                   </span>
                 </button>
                 
-                <button 
-                  className="reaction-button"
-                  onClick={handleReactionClick}
-                  title="Add reaction"
-                >
-                  <Heart size={20} />
-                  <span className="button-text">Reactions</span>
-                  <span className="reaction-count">
-                    {post.reactions || 0}
-                  </span>
-                </button>
+            <button 
+  className={`reaction-button ${likedPosts.has(post.id) ? 'liked' : ''}`}
+  onClick={() => handleReactionClick(post.id)}
+  title="Add reaction"
+>
+  <Heart size={20} fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} />
+  <span className="button-text">Reactions</span>
+  <span className="reaction-count">
+    {post.reactions || 0}
+  </span>
+</button>
+
               </div>
             </div>
 
@@ -474,33 +497,26 @@ const handleCommentSubmit = async () => {
                         {names?.charAt(0).toUpperCase() || 'U'}
                       </div>
                     </div>
-                    <div className="comment-input-wrapper">
-                      <textarea
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                            handleCommentSubmit();
-                          }
-                        }}
-                        placeholder={isSignedIn ? "Write a comment... (Ctrl+Enter to submit)" : "Sign in to comment..."}
-                        className="comment-textarea"
-                        rows={3}
-                        disabled={commentLoading || !isSignedIn}
-                      />
-
-                      <div className="comment-submit-container">
-                        <button
-                          onClick={handleCommentSubmit}
-                          className="comment-submit-button"
-                          disabled={commentLoading || !isSignedIn || !newComment.trim()}
-                          title={isSignedIn ? "Submit comment" : "Sign in to comment"}
-                        >
-                          <Send size={14} />
-                          <span>Submit</span>
-                        </button>
-                      </div>
-                    </div>
+           <div className="comment-input-wrapper">
+  <textarea
+    value={newComment}
+    onChange={(e) => setNewComment(e.target.value)}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        handleCommentSubmit();
+      }
+    }}
+    placeholder={isSignedIn ? "Write a comment... (Ctrl+Enter to submit)" : "Sign in to comment..."}
+    className="comment-textarea"
+    rows={3}
+    maxLength={COMMENT_LIMIT}
+    disabled={commentLoading || !isSignedIn}
+  />
+  <div className="character-count">
+    {newComment.length}/{COMMENT_LIMIT}
+  </div>
+  {/* rest of your submit button code */}
+</div>
                   </div>
                 </div>
 
