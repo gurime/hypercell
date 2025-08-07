@@ -507,22 +507,30 @@ export default function CommunityPostDetails() {
             {/* Header */}
             <div className="community-post-header">
               <div className="community-user-info">
-                <div className="community-user-avatar">
-                  <div className="community-default-avatar">
-                    {(post.author || names)?.charAt(0).toUpperCase() || 'U'}
-                  </div>
-                </div>
+                  {/* Post Type */}
+         
                 <div className="community-user-details">
-                  <h3 className="community-username">{post.author || names || 'Anonymous'}</h3>
-                  <p className="post-date">{formatDate(post.createdAt)}</p>
-                </div>
+                  <h3 className="community-username">{post.author || names || 'Anonymous'}</h3>   {post.type && (
+              <div className="post-type-section">
+                <span className={`post-type-badge ${post.type === 'detailed' || post.type === 'letter' ? 'letter' : 'note'}`}>
+                  {post.type === 'detailed' ? 'letter' : post.type || 'note'}
+                </span>
               </div>
-              <button onClick={handleBack} className="community-btn-back">
+            )}
+                </div>
+
+
+         
+            </div>
+              </div>
+
+              <div className='community-back'> <button onClick={handleBack} className="community-btn-back">
                 <ArrowLeft size={16} />
                 <span>Back</span>
               </button>
-            </div>
-
+              <p className="post-date">{formatDate(post.createdAt)}</p>
+</div>
+                  
             {/* Category */}
             {post.category && (
               <div className="community-post-category">
@@ -532,14 +540,7 @@ export default function CommunityPostDetails() {
               </div>
             )}
 
-            {/* Post Type */}
-            {post.type && (
-              <div className="post-type-section">
-                <span className={`post-type-badge ${post.type === 'detailed' || post.type === 'letter' ? 'letter' : 'note'}`}>
-                  {post.type === 'detailed' ? 'letter' : post.type || 'note'}
-                </span>
-              </div>
-            )}
+       
 
             {/* Title */}
             {post.title && (
@@ -638,11 +639,7 @@ export default function CommunityPostDetails() {
                 {/* Add Comment Form */}
                 <div className="comment-form">
                   <div className="comment-input-container">
-                    <div className="comment-avatar-container">
-                      <div className="comment-avatar">
-                        {names?.charAt(0).toUpperCase() || 'U'}
-                      </div>
-                    </div>
+                  
                     <div className="comment-input-wrapper">
                       <textarea
                         value={newComment}
@@ -679,11 +676,7 @@ export default function CommunityPostDetails() {
                 <div className="comments-list">
                   {comments.filter(comment => !comment.isHidden).map((comment) => (
                     <div key={comment.id} className="comment-item">
-                      <div className="comment-avatar-container">
-                        <div className="comment-avatar">
-                          {comment.authorName?.charAt(0).toUpperCase() || 'U'}
-                        </div>
-                      </div>
+                    
                       <div className="comment-content">
                         <div className="comment-header">
                           <span className="comment-author">{comment.authorName}</span>
@@ -746,7 +739,7 @@ export default function CommunityPostDetails() {
             </div>
           </div>
         </div>
-        <Footer/>
+       
         
         {/* Report Modal */}
         {showReportModal && (
@@ -796,7 +789,10 @@ export default function CommunityPostDetails() {
           </div>
         )}
         
-        {/* Toast Notification */}
+
+      </div>  
+        <Footer/>
+           {/* Toast Notification */}
         {toast.show && (
           <div className={`toast ${toast.type === 'success' ? 'toast-success' : toast.type === 'error' ? 'toast-error' : 'toast-info'}`}>
             <div className="toast-content">
@@ -813,7 +809,6 @@ export default function CommunityPostDetails() {
             </div>
           </div>
         )}
-      </div>
     </>
   );
 }
