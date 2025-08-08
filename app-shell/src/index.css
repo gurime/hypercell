@@ -1276,18 +1276,13 @@ margin-bottom: 24px;
   gap: 8px;
   margin-top: 8px;
   padding: 8px 12px;
-  background: rgba(29, 155, 240, 0.1);
-  border: 1px solid rgba(29, 155, 240, 0.2);
+  background: #1d9bf01a;
+  border: 1px solid #1d9bf033;
   border-radius: 8px;
   font-size: 14px;
 }
 
-.post-sentiment .sentiment-tone {
-  color: #dadada;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: capitalize;
-}
+
 
 /* Emoji styling within sentiment */
 .post-sentiment > span:first-child {
@@ -1310,45 +1305,63 @@ margin-bottom: 24px;
 
 /* Optional: Different styles for different sentiment tones */
 .post-sentiment[data-tone="positively-positive"] {
-  background: rgba(34, 197, 94, 0.1);
+  background: #22c55e;
+  color: #fff;
   border-color: rgba(34, 197, 94, 0.2);
 }
 
 .post-sentiment[data-tone="positively-negative"] {
-  background: rgba(239, 68, 68, 0.1);
+  background: #ef4444;
   border-color: rgba(239, 68, 68, 0.2);
 }
 
 .post-sentiment[data-tone="constructively-critical"] {
-  background: rgba(245, 158, 11, 0.1);
+  background: #f59f0bf5;
   border-color: rgba(245, 158, 11, 0.2);
 }
 
 .post-sentiment[data-tone="neutrally-informative"] {
-  background: rgba(107, 114, 128, 0.1);
+  background: #6b7280;
   border-color: rgba(107, 114, 128, 0.2);
 }
 
 .post-sentiment[data-tone="supportively-encouraging"] {
-  background: rgba(34, 197, 94, 0.1);
+  background: #22c55ebd;
   border-color: rgba(34, 197, 94, 0.2);
 }
 
 .post-sentiment[data-tone="questioningly-curious"] {
-  background: rgba(168, 85, 247, 0.1);
+  background: #a955f7;
   border-color: rgba(168, 85, 247, 0.2);
 }
 
 .post-sentiment[data-tone="humorously-light"] {
-  background: rgba(251, 191, 36, 0.1);
+  background: #fbbe24;
+  color: #000;
   border-color: rgba(251, 191, 36, 0.2);
 }
 
 .post-sentiment[data-tone="seriously-concerned"] {
-  background: rgba(239, 68, 68, 0.1);
+  background: #ef44449c;
   border-color: rgba(239, 68, 68, 0.2);
 }
 
+.post-sentiment[data-tone="critically-analytical"] {
+  background: #f97316;
+  border-color: rgba(249, 115, 22, 0.2);
+}
+
+.post-sentiment[data-tone="negatively-negative"] {
+  background: #a90000;
+  color: #fff;
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.post-sentiment[data-tone="negatively-positive"] {
+  background: #8d4545;
+  color: #fff;
+  border-color: rgba(220, 38, 38, 0.2);
+}
 /* Input Focus Effects */
 
 .form-group::after {
@@ -2588,7 +2601,6 @@ flex-direction: column;
   overflow-x: auto;
   padding: 10px;
   gap: 10px;
-  border-bottom: solid 1px #6c6c6c;
   position: sticky;
 width: auto;
   top: 80px;
@@ -2604,7 +2616,7 @@ width: auto;
   align-items: center;
   gap: 0.5rem;
   border: none;
-  background-color: #098ed1;
+  background-color: transparent;
   color: #ffffff;
 padding: 1rem;
   cursor: pointer;
@@ -2647,7 +2659,6 @@ padding: 1rem;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2655,7 +2666,9 @@ padding: 1rem;
   font-weight: 600;
   font-size: 14px;
   flex-shrink: 0;
+  /* Remove the fixed gradient */
 }
+
 
 .post-author-info {
   flex: 1;
@@ -2666,6 +2679,9 @@ padding: 1rem;
   font-weight: 600;
   color: #ffffff;
   margin-bottom: 4px;
+gap: 1rem;
+    display: flex
+;
 }
 
 .post-meta {

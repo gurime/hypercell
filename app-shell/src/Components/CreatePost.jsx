@@ -891,6 +891,22 @@ return post.authorId === auth.currentUser.uid ||
 post.authorEmail === auth.currentUser.email;
 };
 
+// Generate consistent color based on name
+function getAvatarColor(name) {
+  const colors = [
+    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+  ];
+  
+  const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
+}
+
+// Use inline style for dynamic color
+
 //helper functions end here
 
 return (
@@ -920,9 +936,9 @@ backgroundImage: `url(${categoryImages[activeCategory]})`
 
 <div className='feed-blok-left'>
 <div className="category-nav">
-<h1 className="category-title" style={{color: '#fff', fontSize: '2.5rem', marginBottom: '1rem',textAlign: 'center',borderBottom: 'solid 1px' + '#fff'}}>
+{/* <h1 className="category-title" style={{color: '#fff', fontSize: '2.5rem', marginBottom: '1rem',textAlign: 'center',borderBottom: 'solid 1px' + '#fff'}}>
 {activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}
-</h1>
+</h1> */}
 {categories.map(category => {
 const IconComponent = categoryIcons[category.id];
 return (
@@ -955,8 +971,12 @@ Go Up
 <div key={post.id} className="post-card">
 {/* Post Header */}
 <div className="post-header">
-<div className="post-avatar">
-{getInitials(post.author || names)}
+<div 
+  className="post-avatar" 
+  data-name="avatar"
+  style={{ background: getAvatarColor(post.author || names) }}
+>
+  {getInitials(post.author || names)}
 </div>
 
 <div className="post-author-info">
